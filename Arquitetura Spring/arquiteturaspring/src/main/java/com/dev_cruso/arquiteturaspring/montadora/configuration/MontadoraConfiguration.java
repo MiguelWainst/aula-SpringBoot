@@ -4,6 +4,7 @@ import com.dev_cruso.arquiteturaspring.montadora.Motor;
 import com.dev_cruso.arquiteturaspring.montadora.TipoMotor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 @Configuration
 public class MontadoraConfiguration {
@@ -31,6 +32,7 @@ public class MontadoraConfiguration {
     }
 
     @Bean
+    @Primary // Diz que esse é o padrão, se eu não expecificar no Controller qual é, ele usa esse
     public Motor motorTurbo() {
         var motor = new Motor();
         motor.setCavalos(180);
