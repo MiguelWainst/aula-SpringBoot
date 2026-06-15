@@ -1,0 +1,6 @@
+
+# Rodar container Postgre na versão 18.4
+docker run --name librarydb -p 5432:5432 -e POSTGRES_PASSWORD=123 -e POSTGRES_USER=miguel -e POSTGRES_DB=library postgres:18.4
+
+# Rodar Pgadmin 4
+docker run --name pgadmin4 -p 15432:80 -e PGADMIN_DEFAULT_EMAIL=miguel@miguel.com -e PGADMIN_DEFAULT_PASSWORD=123 dpage/pgadmin4
