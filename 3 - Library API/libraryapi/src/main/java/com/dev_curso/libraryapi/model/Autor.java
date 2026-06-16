@@ -1,6 +1,7 @@
 package com.dev_curso.libraryapi.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,8 +11,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "autor", schema = "public")
-@Getter
-@Setter
+@Data
 public class Autor {
 
     // id uuid not null primary key
@@ -32,7 +32,8 @@ public class Autor {
     @Column(name = "nacionalidade", length = 50, nullable = false)
     private String nacionalidade;
 
-    @OneToMany(mappedBy = "autor")
+//    @OneToMany(mappedBy = "autor")
+    @Transient
     private List<Livro> livros;
 
     @Deprecated
