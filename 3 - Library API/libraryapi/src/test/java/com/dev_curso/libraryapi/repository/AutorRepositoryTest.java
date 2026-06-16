@@ -7,6 +7,7 @@ import com.dev_curso.libraryapi.model.Livro;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -71,7 +72,6 @@ public class AutorRepositoryTest {
     @Test
     public void atualizarTest() {
         var id = UUID.fromString("6c1943be-3e1c-4ccd-a881-18ac51cf392e");
-
         Optional<Autor> possivelAutor = repository.findById(id);
 
         if (possivelAutor.isPresent()) {
@@ -94,6 +94,16 @@ public class AutorRepositoryTest {
         list.forEach(System.out::println);
     }
 
+    @Test
+    void listarLivrosAutor() {
+        var id = UUID.fromString("6c1943be-3e1c-4ccd-a881-18ac51cf392e");
+        var autor = repository.findById(id).get();
+        List<Livro> listLivro = livroRepository.findByAutor(autor);
+        autor.setLivros(listLivro);
+
+        autor.getLivros().forEach(System.out::println);
+    }
+
     // Conta quantos autores tem
     @Test
     public void countTest() {
@@ -114,5 +124,4 @@ public class AutorRepositoryTest {
         var maria = repository.findById(id).get();
         repository.delete(maria);
     }
-
 }

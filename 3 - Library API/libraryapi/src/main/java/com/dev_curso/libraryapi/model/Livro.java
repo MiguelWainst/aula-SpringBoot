@@ -2,6 +2,7 @@ package com.dev_curso.libraryapi.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -10,6 +11,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "livro")
 @Data
+@ToString(exclude = "autor")
 public class Livro {
 
     // id uuid not null primary key
@@ -40,7 +42,7 @@ public class Livro {
     private BigDecimal preco;
 
     // id_autor uuid not null references autor(id),
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_autor")
     private Autor autor;
 }

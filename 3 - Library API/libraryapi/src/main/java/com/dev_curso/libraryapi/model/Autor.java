@@ -2,6 +2,7 @@ package com.dev_curso.libraryapi.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "autor", schema = "public")
 @Data
+@ToString(exclude = "livros")
 public class Autor {
 
     // id uuid not null primary key
@@ -30,7 +32,7 @@ public class Autor {
     @Column(name = "nacionalidade", length = 50, nullable = false)
     private String nacionalidade;
 
-    @OneToMany(mappedBy = "autor")
+    @OneToMany(mappedBy = "autor", fetch = FetchType.LAZY) // Por padrão já é lazy
     private List<Livro> livros;
 
     @Deprecated

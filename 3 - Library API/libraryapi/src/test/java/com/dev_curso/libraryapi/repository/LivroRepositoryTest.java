@@ -25,15 +25,14 @@ class LivroRepositoryTest {
     @Test
     void salvarTest() {
         Livro livro = new Livro();
-        livro.setIsbn("10013-83080");
-        livro.setPreco(BigDecimal.valueOf(10.99));
+        livro.setIsbn("13803-82980");
+        livro.setPreco(BigDecimal.valueOf(320));
         livro.setGenero(GeneroLivro.BIOGRAFIA);
         livro.setTitulo("Elon Musk");
-        livro.setDataPublicacao(LocalDate.of(2023, 11, 29));
+        livro.setDataPublicacao(LocalDate.of(2026, 3, 10));
 
-        Autor autor = autorRepository.findById(UUID.fromString("a81e6eb2-ffe5-4a58-add9-77e00fc23144")).orElse(null);
+        Autor autor = autorRepository.findById(UUID.fromString("caef8ccb-a88b-4fa7-8a5b-c4e2da3b9330")).orElse(null);
         livro.setAutor(autor);
-
 
         var livroSalvo = livroRepository.save(livro);
         System.out.println("Livro adicionado: " + livroSalvo);
@@ -132,4 +131,25 @@ class LivroRepositoryTest {
             System.out.println("Título do livro: " + livro.getTitulo());
         }
     }
+
+    @Test
+    void buscarPorTituloTest() {
+        List<Livro> livros = livroRepository.findByTitulo("Elon Musk");
+        livros.forEach(System.out::println);
+    }
+
+    @Test
+    void buscarPorIsbnTest() {
+        List<Livro> livros = livroRepository.findByIsbn("10013-83080");
+        livros.forEach(System.out::println);
+    }
+
+    @Test
+    void buscarPorTituloEPrecoTest() {
+        BigDecimal preco = BigDecimal.valueOf(320.00);
+        String titulo = "Elon Musk";
+        List<Livro> livros = livroRepository.findByTituloAndPreco(titulo, preco);
+        livros.forEach(System.out::println);
+    }
+
 }
