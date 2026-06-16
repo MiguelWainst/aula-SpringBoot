@@ -40,7 +40,7 @@ public class Livro {
     private BigDecimal preco;
 
     // id_autor uuid not null references autor(id),
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "id_autor")
     private Autor autor;
 }

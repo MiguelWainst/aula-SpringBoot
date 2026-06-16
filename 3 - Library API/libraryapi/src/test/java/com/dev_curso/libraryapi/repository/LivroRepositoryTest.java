@@ -111,4 +111,25 @@ class LivroRepositoryTest {
             System.out.println("Deletado!");
         }
     }
+
+    @Test
+    void buscarLivroTest() {
+        Optional<Livro> possivelLivro = livroRepository.findById(UUID.fromString("6e93bab4-f328-4315-97a9-58debb394fc4"));
+
+        if (possivelLivro.isPresent()) {
+            Livro livro = possivelLivro.get();
+            System.out.println("Título do livro: " + livro.getTitulo());
+            System.out.println("Autor do livro: " + livro.getAutor().getNome());
+        }
+    }
+
+    @Test
+    void buscarLivro2Test() {
+        Optional<Livro> possivelLivro = livroRepository.findById(UUID.fromString("6e93bab4-f328-4315-97a9-58debb394fc4"));
+
+        if (possivelLivro.isPresent()) {
+            Livro livro = possivelLivro.get();
+            System.out.println("Título do livro: " + livro.getTitulo());
+        }
+    }
 }
