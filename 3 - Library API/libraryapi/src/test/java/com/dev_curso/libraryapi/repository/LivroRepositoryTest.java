@@ -25,13 +25,13 @@ class LivroRepositoryTest {
     @Test
     void salvarTest() {
         Livro livro = new Livro();
-        livro.setIsbn("13803-82980");
-        livro.setPreco(BigDecimal.valueOf(320));
-        livro.setGenero(GeneroLivro.BIOGRAFIA);
-        livro.setTitulo("Elon Musk");
-        livro.setDataPublicacao(LocalDate.of(2026, 3, 10));
+        livro.setIsbn("33807-10080");
+        livro.setPreco(BigDecimal.valueOf(78.30));
+        livro.setGenero(GeneroLivro.CIENCIA);
+        livro.setTitulo("Astros, Estrelas e Galáxias");
+        livro.setDataPublicacao(LocalDate.of(2026, 6, 16));
 
-        Autor autor = autorRepository.findById(UUID.fromString("caef8ccb-a88b-4fa7-8a5b-c4e2da3b9330")).orElse(null);
+        Autor autor = autorRepository.findById(UUID.fromString("a81e6eb2-ffe5-4a58-add9-77e00fc23144")).orElse(null);
         livro.setAutor(autor);
 
         var livroSalvo = livroRepository.save(livro);
@@ -134,7 +134,7 @@ class LivroRepositoryTest {
 
     @Test
     void buscarPorTituloTest() {
-        List<Livro> livros = livroRepository.findByTitulo("Elon Musk");
+        List<Livro> livros = livroRepository.findByTituloContaining("Assombrada");
         livros.forEach(System.out::println);
     }
 
@@ -152,4 +152,27 @@ class LivroRepositoryTest {
         livros.forEach(System.out::println);
     }
 
+    @Test
+    void listarLivrosComJPQL() {
+        var resultado = livroRepository.listAllLivroOrderByName();
+        resultado.forEach(System.out::println);
+    }
+
+    @Test
+    void listarAutoresDosLivros() {
+        var resultado = livroRepository.listAutorOfLivros();
+        resultado.forEach(System.out::println);
+    }
+
+    @Test
+    void listarNomeDosLivros() {
+        var resultado = livroRepository.listNameOfLivro();
+        resultado.forEach(System.out::println);
+    }
+
+    @Test
+    void listarGeneroPorNacionalidade() {
+        var resultado = livroRepository.findGeneroByNacionalidade();
+        resultado.forEach(System.out::println);
+    }
 }
