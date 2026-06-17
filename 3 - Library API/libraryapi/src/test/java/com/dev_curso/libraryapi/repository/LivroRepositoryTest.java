@@ -175,4 +175,10 @@ class LivroRepositoryTest {
         var resultado = livroRepository.findGeneroByNacionalidade();
         resultado.forEach(System.out::println);
     }
+
+    @Test
+    void listarLivroPeloGenero() {
+        var resultado = livroRepository.findByGeneroNamed(GeneroLivro.MISTERIO, "dataPublicacao");
+        resultado.forEach(System.out::println);
+    }
 }

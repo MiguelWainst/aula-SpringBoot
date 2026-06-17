@@ -5,6 +5,7 @@ import com.dev_curso.libraryapi.model.GeneroLivro;
 import com.dev_curso.libraryapi.model.Livro;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -67,4 +68,15 @@ public interface LivroRepository extends JpaRepository<Livro, UUID> {
         order by l.genero
     """)
     List<GeneroLivro> findGeneroByNacionalidade();
+
+    // Named parameters -> Parametros nomeados, ou seja, por nome (:parametro)
+    @Query("select l from Livro l where genero = :genero order by :oderBy")
+    List<Livro> findByGeneroNamed(
+            @Param("genero") GeneroLivro generoLivro,
+            @Param("oderBy") String orderBy
+    );
+
+    // Positional Parameters -> por posição, igual as auldas de JDBC e DAO
+    @Query("select l from Livro l where genero = ?1 order by ?2")
+    List<Livro> findByGeneroPositional(GeneroLivro generoLivro, String orderBy);
 }
