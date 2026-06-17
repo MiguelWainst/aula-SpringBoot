@@ -3,11 +3,15 @@ package com.dev_curso.libraryapi.repository;
 import com.dev_curso.libraryapi.model.Autor;
 import com.dev_curso.libraryapi.model.GeneroLivro;
 import com.dev_curso.libraryapi.model.Livro;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -79,4 +83,14 @@ public interface LivroRepository extends JpaRepository<Livro, UUID> {
     // Positional Parameters -> por posição, igual as auldas de JDBC e DAO
     @Query("select l from Livro l where genero = ?1 order by ?2")
     List<Livro> findByGeneroPositional(GeneroLivro generoLivro, String orderBy);
+
+    @Modifying
+    @Transactional
+    @Query("delete from Livro where genero = ?1")
+    void deleteByGenero(GeneroLivro generoLivro);
+
+    @Transactional
+    @Modifying
+    @Query("update Livro set dataPublicacao = ?1 where id = ?2")
+    void updateDataPublicacao(LocalDate novaData, UUID id);
 }

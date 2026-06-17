@@ -181,4 +181,14 @@ class LivroRepositoryTest {
         var resultado = livroRepository.findByGeneroNamed(GeneroLivro.MISTERIO, "dataPublicacao");
         resultado.forEach(System.out::println);
     }
+
+    @Test
+    void deletePorGenero() {
+        livroRepository.deleteByGenero(GeneroLivro.FICCAO);
+    }
+
+    @Test
+    void updateDataPublicacao() {
+        livroRepository.updateDataPublicacao(LocalDate.of(2000,1,16), UUID.fromString("95872b55-fc35-4da6-9a92-abcc35adff9c"));
+    }
 }
