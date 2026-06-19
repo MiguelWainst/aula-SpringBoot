@@ -4,6 +4,7 @@ import com.dev_curso.libraryapi.model.Autor;
 import com.dev_curso.libraryapi.repository.AutorRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,13 +31,30 @@ public class AutorService {
     * com a tabela de Livro. Um autor possui uma lista de
     * livros. Da para usar o deleteById quando o efeito
     * cascade já foi setado na criação da tabela, daí
-    * tudo bem usar*/
+    * tudo bem usar. */
+    /** @see com.dev_curso.libraryapi.controller.AutorController */
 //    public void deletarPorId(UUID id) {
 //        autorRepository.deleteById(id);
 //    }
 
     public void deletarAutor(Autor autor) {
         autorRepository.delete(autor);
+    }
+
+    public List<Autor> pesquisarAutores(String nome, String nacionalidade) {
+        if(nome != null && nacionalidade != null) {
+            return autorRepository.findByNomeContainingAndNacionalidade(nome, nacionalidade);
+        }
+
+        if (nome != null) {
+            return autorRepository.findByNomeContaining(nome);
+        }
+
+        if (nacionalidade != null) {
+            return  autorRepository.findByNacionalidade(nacionalidade);
+        }
+
+        return autorRepository.findAll();
     }
 
 }

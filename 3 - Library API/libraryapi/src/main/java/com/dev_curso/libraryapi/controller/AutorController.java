@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/autores") /* http://host:8080/autores */
@@ -50,6 +52,14 @@ public class AutorController {
         return ResponseEntity.notFound().build();
     }
 
+    /* Usa-se o deleteById quando a tabela não possuir
+     * um relacionamento com outras tabelas.
+     * Nesse caso, a tabela Autor possui um relacionamento
+     * com a tabela de Livro. Um autor possui uma lista de
+     * livros. Da para usar o deleteById quando o efeito
+     * cascade já foi setado na criação da tabela, daí
+     * tudo bem usar.*/
+    /** @see AutorService */
 //    @DeleteMapping("{id}")
 //    public ResponseEntity<Void> deletarAutorPorId(@PathVariable String id) {
 //        var idAutor = UUID.fromString(id);
@@ -70,5 +80,22 @@ public class AutorController {
         }
         autorService.deletarAutor(autorOptional.get());
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<AutorDTO>> pesquisarAutores(
+            @RequestParam(value = "nome", required = false) String nome,
+            @RequestParam(value = "nacionalidade", required = false) String nacionalidade) {
+        var listAutores = autorService.pesquisarAutores(nome, nacionalidade);
+        List<AutorDTO> listaAutoresDto = listAutores
+                .stream()
+                .map(autor -> new AutorDTO(
+                        autor.getNome(),
+                        autor.getDataNascimento(),
+                        autor.getNacionalidade(),
+                        autor.getId()
+                ))
+                .toList();
+        return ResponseEntity.ok(listaAutoresDto);
     }
 }
