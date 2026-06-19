@@ -2,7 +2,7 @@ spring:
   application:
     name: spring_frete
   datasource:
-    url: jdbc:postgresql://localhost:5432/library
+    url: jdbc:postgresql://localhost:5432/frete
     username: miguel
     password: 123
     driver-class-name: org.postgresql.Driver

@@ -3,8 +3,13 @@ package com.dev_curso.libraryapi.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,6 +17,7 @@ import java.util.UUID;
 @Table(name = "autor", schema = "public")
 @Data
 @ToString(exclude = "livros")
+@EntityListeners(AuditingEntityListener.class)
 public class Autor {
 
     // id uuid not null primary key
@@ -20,23 +26,31 @@ public class Autor {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    // nome varchar(100) not null
     @Column(name = "nome", length = 100, nullable = false)
     private String nome;
 
-    // data_nascimento date not null,
     @Column(name = "data_nascimento", nullable = false)
     private LocalDate dataNascimento;
 
-    // nacionalidade varchar(50) not null
     @Column(name = "nacionalidade", length = 50, nullable = false)
     private String nacionalidade;
 
     @OneToMany(mappedBy = "autor", fetch = FetchType.LAZY) // Por padrão já é lazy
     private List<Livro> livros;
 
+    @CreatedDate
+    @Column(name = "data_cadastro")
+    private LocalDateTime dataCadastro;
+
+    @LastModifiedDate
+    @Column(name = "data_atualizacao")
+    private LocalDateTime dataAtualizacao;
+
+    @Column(name = "id_usuario")
+    private UUID idUsuario;
+
+
     @Deprecated
     public Autor(){
-
     } // Para o uso do Framework
 }

@@ -1,0 +1,22 @@
+create table pedido(
+	id uuid not null primary key,
+	preco numeric(18,2),
+	peso numeric(12,2),
+	endereco varchar(255),
+	dimensao numeric(6,2),
+	rota varchar(20),
+	data_cadastro timestamp,
+	data_atualizacao timestamp
+);
+
+create table carga (
+	id uuid not null primary key,
+	preco numeric(14,2),
+	peso numeric(12,2),
+	dimensao numeric(6,2),
+	carga_tipo varchar(50),
+	data_cadastro timestamp,
+	data_atualizacao timestamp,
+	pedido_id uuid not null,
+	constraint fk_carga_pedido foreign key(pedido_id) references pedido(id)
+)
