@@ -3,7 +3,6 @@ package com.dev_curso.libraryapi.repository;
 import com.dev_curso.libraryapi.model.Autor;
 import com.dev_curso.libraryapi.model.GeneroLivro;
 import com.dev_curso.libraryapi.model.Livro;
-import org.springframework.cglib.core.Local;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -93,4 +92,6 @@ public interface LivroRepository extends JpaRepository<Livro, UUID> {
     @Modifying
     @Query("update Livro set dataPublicacao = ?1 where id = ?2")
     void updateDataPublicacao(LocalDate novaData, UUID id);
+
+    boolean existsByAutor(Autor autor);
 }

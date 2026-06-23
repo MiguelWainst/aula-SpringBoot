@@ -31,7 +31,7 @@ class LivroRepositoryTest {
         livro.setTitulo("Astros, Estrelas e Galáxias");
         livro.setDataPublicacao(LocalDate.of(2026, 6, 16));
 
-        Autor autor = autorRepository.findById(UUID.fromString("a81e6eb2-ffe5-4a58-add9-77e00fc23144")).orElse(null);
+        Autor autor = autorRepository.findById(UUID.fromString("06241287-cc69-4814-8768-3250b60c5dc7")).orElse(null);
         livro.setAutor(autor);
 
         var livroSalvo = livroRepository.save(livro);

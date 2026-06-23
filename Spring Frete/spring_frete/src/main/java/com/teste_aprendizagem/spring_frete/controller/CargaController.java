@@ -1,6 +1,8 @@
 package com.teste_aprendizagem.spring_frete.controller;
 
 import com.teste_aprendizagem.spring_frete.dto.CargaDTO;
+import com.teste_aprendizagem.spring_frete.dto.ErroResposta;
+import com.teste_aprendizagem.spring_frete.exceptions.RegistroDuplicadoException;
 import com.teste_aprendizagem.spring_frete.model.entity.Carga;
 import com.teste_aprendizagem.spring_frete.model.entity.Pedido;
 import com.teste_aprendizagem.spring_frete.repository.PedidoRepository;
@@ -27,17 +29,22 @@ public class CargaController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> salvar(@RequestBody CargaDTO carga) {
-        Carga cargaEntity = carga.mapToCarga();
-        Carga cargaSalva = cargaService.salvarComPedido(cargaEntity, carga.pedidoId());
+    public ResponseEntity<?> salvar(@RequestBody CargaDTO carga) {
+        try {
+            Carga cargaEntity = carga.mapToCarga();
+            cargaService.salvarComPedido(cargaEntity, carga.pedidoId());
 
-        /* http://localhost:8080/cargas/{id} */
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(cargaEntity.getId())
-                .toUri();
+            /* http://localhost:8080/cargas/{id} */
+            URI location = ServletUriComponentsBuilder
+                    .fromCurrentRequest()
+                    .path("/{id}")
+                    .buildAndExpand(cargaEntity.getId())
+                    .toUri();
 
-        return ResponseEntity.created(location).build();
+            return ResponseEntity.created(location).build();
+        } catch (RegistroDuplicadoException e) {
+            var erroDTO = ErroResposta.conflito(e.getMessage());
+            return ResponseEntity.status(erroDTO.status()).body(erroDTO);
+        }
     }
 }

@@ -4,6 +4,7 @@ import com.teste_aprendizagem.spring_frete.model.entity.Carga;
 import com.teste_aprendizagem.spring_frete.model.entity.Pedido;
 import com.teste_aprendizagem.spring_frete.repository.CargaRepository;
 import com.teste_aprendizagem.spring_frete.repository.PedidoRepository;
+import com.teste_aprendizagem.spring_frete.validators.CargaValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,11 +16,13 @@ public class CargaService {
 
     private final CargaRepository cargaRepository;
     private final PedidoRepository pedidoRepository;
+    private final CargaValidator cargaValidator;
 
     // Construtor único injeta ambos os repositórios automaticamente
-    public CargaService(CargaRepository cargaRepository, PedidoRepository pedidoRepository) {
+    public CargaService(CargaRepository cargaRepository, PedidoRepository pedidoRepository, CargaValidator cargaValidator) {
         this.cargaRepository = cargaRepository;
         this.pedidoRepository = pedidoRepository;
+        this.cargaValidator = cargaValidator;
     }
 
     public Carga salvar(Carga carga) {
@@ -48,6 +51,7 @@ public class CargaService {
 
         // Amarra o pedido encontrado/criado na Carga
         carga.setPedido(pedido);
+        cargaValidator.validar(carga);
         Carga cargaSalva = cargaRepository.save(carga);
 
         // Recalcula os totais do pedido (Soma o preço e peso de todas as cargas vinculadas a ele)

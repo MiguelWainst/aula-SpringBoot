@@ -1,7 +1,11 @@
 package com.dev_curso.libraryapi.service;
 
+import com.dev_curso.libraryapi.exceptions.OperacaoNaoPermitidaException;
 import com.dev_curso.libraryapi.model.Autor;
 import com.dev_curso.libraryapi.repository.AutorRepository;
+import com.dev_curso.libraryapi.repository.LivroRepository;
+import com.dev_curso.libraryapi.validator.AutorValidator;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,16 +13,24 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class AutorService {
 
     private final AutorRepository autorRepository;
-
-    public AutorService(AutorRepository autorRepository) {
-        this.autorRepository = autorRepository;
-    }
+    private final AutorValidator autorValidator;
+    private final LivroRepository livroRepository;
 
     public Autor salvar(Autor autor) {
+        autorValidator.validar(autor);
         return autorRepository.save(autor);
+    }
+
+    public void atualizar(Autor autor) {
+        if (autor.getId() == null) {
+            throw new IllegalArgumentException("Para atualizar, é necessário que o autor já exista");
+        }
+        autorValidator.validar(autor);
+        autorRepository.save(autor);
     }
 
     public Optional<Autor> obterPorId(UUID id) {
@@ -38,6 +50,11 @@ public class AutorService {
 //    }
 
     public void deletarAutor(Autor autor) {
+        if (temLivro(autor)) {
+            throw new OperacaoNaoPermitidaException(
+                    "Erro na exclusão: registro está sendo utilizado."
+            );
+        }
         autorRepository.delete(autor);
     }
 
@@ -45,16 +62,16 @@ public class AutorService {
         if(nome != null && nacionalidade != null) {
             return autorRepository.findByNomeContainingAndNacionalidade(nome, nacionalidade);
         }
-
         if (nome != null) {
             return autorRepository.findByNomeContaining(nome);
         }
-
         if (nacionalidade != null) {
             return  autorRepository.findByNacionalidade(nacionalidade);
         }
-
         return autorRepository.findAll();
     }
 
+    private boolean temLivro(Autor autor) {
+        return livroRepository.existsByAutor(autor);
+    }
 }
