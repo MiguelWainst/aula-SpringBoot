@@ -18,5 +18,17 @@ public class ClienteService {
         if (cliente.getId() == null) {
             clienteRepository.save(cliente);
         }
+        throw new IllegalArgumentException("Este cliente já está cadastrado!");
+    }
+
+    public void atualizar(Cliente cliente) {
+        if (cliente.getId() == null) {
+            throw new IllegalArgumentException("Impossível atualizar um cliente inexistente.");
+        }
+        clienteRepository.save(cliente);
+    }
+
+    public Optional<Cliente> acharPorId(UUID id){
+        return clienteRepository.findById(id);
     }
 }

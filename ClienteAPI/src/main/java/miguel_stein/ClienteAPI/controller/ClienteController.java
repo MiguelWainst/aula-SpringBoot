@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -30,5 +31,41 @@ public class ClienteController {
                         .toUri();
 
         return ResponseEntity.created(location).build();
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<Void> atualizarCliente(
+            @RequestBody ClienteDTO clienteDTO,
+            @PathVariable("id") String id
+    ) {
+        Optional<Cliente> clienteOptional = clienteService.acharPorId(UUID.fromString(id));
+        if (clienteOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        Cliente cliente = clienteOptional.get();
+        cliente.setNome(clienteDTO.nome());
+        cliente.setDataNascimento(clienteDTO.dataNascimento());
+        cliente.setEmail(clienteDTO.email());
+        cliente.setCpf(clienteDTO.cpf());
+        clienteService.atualizar(cliente);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<ClienteDTO> acharClientePorId(@PathVariable("id") String id) {
+        Optional<Cliente> clienteOptional = clienteService.acharPorId(UUID.fromString(id));
+        if (clienteOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        Cliente cliente = clienteOptional.get();
+        ClienteDTO clienteDTO = new ClienteDTO(
+                cliente.getId(),
+                cliente.getNome(),
+                cliente.getDataNascimento(),
+                cliente.getEmail(),
+                cliente.getCpf()
+        );
+        return ResponseEntity.ok(clienteDTO);
     }
 }

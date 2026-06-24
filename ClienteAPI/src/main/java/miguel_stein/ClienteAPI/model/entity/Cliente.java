@@ -34,7 +34,6 @@ public class Cliente {
     @LastModifiedDate
     private LocalDateTime dataAtualizacao;
 
-    @Deprecated
     public Cliente() {
     }
 }

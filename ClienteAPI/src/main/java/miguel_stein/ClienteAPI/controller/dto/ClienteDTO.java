@@ -3,8 +3,9 @@ package miguel_stein.ClienteAPI.controller.dto;
 import miguel_stein.ClienteAPI.model.entity.Cliente;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
-public record ClienteDTO(String nome, LocalDate dataNascimento, String email, String cpf) {
+public record ClienteDTO(UUID id, String nome, LocalDate dataNascimento, String email, String cpf) {
 
     public Cliente mapearParaCliente() {
         Cliente cliente = new Cliente();
