@@ -31,4 +31,8 @@ public class ClienteService {
     public Optional<Cliente> acharPorId(UUID id){
         return clienteRepository.findById(id);
     }
+
+    public Optional<Cliente> acharPorCpf(String cpf) {
+        return clienteRepository.findByCpf(cpf);
+    }
 }

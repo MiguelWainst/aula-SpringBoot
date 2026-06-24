@@ -68,4 +68,21 @@ public class ClienteController {
         );
         return ResponseEntity.ok(clienteDTO);
     }
+
+    @GetMapping
+    public ResponseEntity<ClienteDTO> acharPorCpf(@RequestParam String cpf) {
+        Optional<Cliente> clienteOptional = clienteService.acharPorCpf(cpf);
+        if (clienteOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        Cliente cliente = clienteOptional.get();
+        ClienteDTO clienteDTO = new ClienteDTO(
+                cliente.getId(),
+                cliente.getNome(),
+                cliente.getDataNascimento(),
+                cliente.getEmail(),
+                cliente.getCpf()
+        );
+        return ResponseEntity.ok().body(clienteDTO);
+    }
 }
