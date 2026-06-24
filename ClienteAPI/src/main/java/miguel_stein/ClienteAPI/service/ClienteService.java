@@ -35,4 +35,8 @@ public class ClienteService {
     public Optional<Cliente> acharPorCpf(String cpf) {
         return clienteRepository.findByCpf(cpf);
     }
+
+    public void deletarCliente(Cliente cliente) {
+        clienteRepository.delete(cliente);
+    }
 }

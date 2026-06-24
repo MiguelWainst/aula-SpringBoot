@@ -85,4 +85,14 @@ public class ClienteController {
         );
         return ResponseEntity.ok().body(clienteDTO);
     }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deletarClientePorId(@PathVariable String id) {
+        Optional<Cliente> clienteOptional = clienteService.acharPorId(UUID.fromString(id));
+        if (clienteOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        clienteService.deletarCliente(clienteOptional.get());
+        return ResponseEntity.noContent().build();
+    }
 }
