@@ -13,7 +13,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AutorValidator {
 
-    private AutorRepository repository;
+    private final AutorRepository repository;
 
     public void validar(Autor autor) {
         if (existeAutorCadastrado(autor)) {
@@ -25,13 +25,11 @@ public class AutorValidator {
         Optional<Autor> autorOptional = repository.findByNomeAndDataNascimentoAndNacionalidade(
                 autor.getNome(), autor.getDataNascimento(), autor.getNacionalidade()
         );
-
         boolean result = autorOptional.isPresent();
 
         if (autor.getId() == null) {
             return result;
         }
-
         return result && !autor.getId().equals(autorOptional.get().getId());
     }
 }

@@ -6,6 +6,7 @@ import com.dev_curso.libraryapi.exceptions.OperacaoNaoPermitidaException;
 import com.dev_curso.libraryapi.exceptions.RegistroDuplicadoException;
 import com.dev_curso.libraryapi.model.Autor;
 import com.dev_curso.libraryapi.service.AutorService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +27,7 @@ public class AutorController {
     /* Camada Rest, Camada View, API */
 
     @PostMapping
-    public ResponseEntity<?> salvar(@RequestBody AutorDTO autor) {
+    public ResponseEntity<?> salvar(@RequestBody @Valid AutorDTO autor) {
         try {
             Autor autorEntidade = autor.mapearParaAutor();
             autorService.salvar(autorEntidade);
@@ -40,6 +41,31 @@ public class AutorController {
                     .toUri();
 
             return ResponseEntity.created(location).build();
+        } catch (RegistroDuplicadoException e) {
+            var erroDTO = ErroResposta.conflito(e.getMessage());
+            return ResponseEntity.status(erroDTO.status()).body(erroDTO);
+        }
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<?> autualizarAutorProfessor(
+            @PathVariable("id") String id,
+            @RequestBody @Valid AutorDTO dto
+    ) {
+        try {
+            var idAutor = UUID.fromString(id);
+            Optional<Autor> autorOptional = autorService.obterPorId(idAutor);
+            if (autorOptional.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            var autorEntity = autorOptional.get();
+            autorEntity.setNome(dto.nome());
+            autorEntity.setNacionalidade(dto.nacionalidade());
+            autorEntity.setDataNascimento(dto.dataNascimento());
+
+            autorService.atualizar(autorEntity);
+            return ResponseEntity.noContent().build();
         } catch (RegistroDuplicadoException e) {
             var erroDTO = ErroResposta.conflito(e.getMessage());
             return ResponseEntity.status(erroDTO.status()).body(erroDTO);
@@ -108,31 +134,6 @@ public class AutorController {
                 ))
                 .toList();
         return ResponseEntity.ok(listaAutoresDto);
-    }
-
-    @PutMapping("{id}")
-    public ResponseEntity<?> autualizarAutorProfessor(
-            @PathVariable("id") String id,
-            @RequestBody AutorDTO dto
-    ) {
-        try {
-            var idAutor = UUID.fromString(id);
-            Optional<Autor> autorOptional = autorService.obterPorId(idAutor);
-            if (autorOptional.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
-
-            var autorEntity = autorOptional.get();
-            autorEntity.setNome(dto.nome());
-            autorEntity.setNacionalidade(dto.nacionalidade());
-            autorEntity.setDataNascimento(dto.dataNascimento());
-
-            autorService.atualizar(autorEntity);
-            return ResponseEntity.noContent().build();
-        } catch (RegistroDuplicadoException e) {
-            var erroDTO = ErroResposta.conflito(e.getMessage());
-            return ResponseEntity.status(erroDTO.status()).body(erroDTO);
-        }
     }
 
 }
