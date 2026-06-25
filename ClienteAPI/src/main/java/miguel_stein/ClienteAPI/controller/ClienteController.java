@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -69,7 +70,7 @@ public class ClienteController {
         return ResponseEntity.ok(clienteDTO);
     }
 
-    @GetMapping
+    @GetMapping("cpf")
     public ResponseEntity<ClienteDTO> acharPorCpf(@RequestParam String cpf) {
         Optional<Cliente> clienteOptional = clienteService.acharPorCpf(cpf);
         if (clienteOptional.isEmpty()) {
@@ -84,6 +85,23 @@ public class ClienteController {
                 cliente.getCpf()
         );
         return ResponseEntity.ok().body(clienteDTO);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ClienteDTO>> acharTodos() {
+        List<Cliente> listCliente= clienteService.acharTodos();
+        List<ClienteDTO> clienteDTOS = listCliente
+                .stream()
+                .map(cliente -> new ClienteDTO(
+                                cliente.getId(),
+                                cliente.getNome(),
+                                cliente.getDataNascimento(),
+                                cliente.getEmail(),
+                                cliente.getCpf()
+                        )
+                )
+                .toList();
+        return ResponseEntity.ok(clienteDTOS);
     }
 
     @DeleteMapping("{id}")
