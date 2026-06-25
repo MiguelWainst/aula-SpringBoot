@@ -104,6 +104,22 @@ public class ClienteController {
         return ResponseEntity.ok(clienteDTOS);
     }
 
+    @GetMapping("nomes")
+    public ResponseEntity<List<ClienteDTO>> listarPorNome(@RequestParam String nome) {
+        List<Cliente> clientes = clienteService.listarClientesPorNome(nome);
+        List<ClienteDTO> clientesDTOS = clientes.
+                stream().
+                map(cliente -> new ClienteDTO(
+                        cliente.getId(),
+                        cliente.getNome(),
+                        cliente.getDataNascimento(),
+                        cliente.getEmail(),
+                        cliente.getCpf()
+                ))
+                .toList();
+        return ResponseEntity.ok(clientesDTOS);
+    }
+
     @DeleteMapping("{id}")
     public ResponseEntity<Void> deletarClientePorId(@PathVariable String id) {
         Optional<Cliente> clienteOptional = clienteService.acharPorId(UUID.fromString(id));

@@ -38,7 +38,11 @@ public class ClienteService {
     }
 
     public List<Cliente> acharTodos() {
-        return clienteRepository.listAllClientesOrderByName();
+        return clienteRepository.listAllClienteOrderByName();
+    }
+
+    public List<Cliente> listarClientesPorNome(String nome) {
+        return clienteRepository.listAllClienteOrderByNomeContaining(nome);
     }
 
     public void deletarCliente(Cliente cliente) {

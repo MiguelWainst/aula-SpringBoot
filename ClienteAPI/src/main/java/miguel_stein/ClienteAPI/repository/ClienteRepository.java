@@ -14,7 +14,10 @@ public interface ClienteRepository extends JpaRepository<Cliente, UUID> {
 
     Optional<Cliente> findByCpf(String cpf);
 
-    @Query("select c from Cliente as c order by c.nome")
-    List<Cliente> listAllClientesOrderByName();
+    /* Usando JPQL e fazendo QueryMethods na mão. */
+    @Query("select c from Cliente as c where upper(c.nome) like upper(concat('%', ?1, '%')) order by nome")
+    List<Cliente> listAllClienteOrderByNomeContaining(String nome);
 
+    @Query("select c from Cliente as c order by c.nome")
+    List<Cliente> listAllClienteOrderByName();
 }
