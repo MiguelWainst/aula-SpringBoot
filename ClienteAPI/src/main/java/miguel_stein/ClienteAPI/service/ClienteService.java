@@ -3,6 +3,7 @@ package miguel_stein.ClienteAPI.service;
 import lombok.RequiredArgsConstructor;
 import miguel_stein.ClienteAPI.model.entity.Cliente;
 import miguel_stein.ClienteAPI.repository.ClienteRepository;
+import miguel_stein.ClienteAPI.validators.ClienteValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,19 +15,16 @@ import java.util.UUID;
 public class ClienteService {
 
     private final ClienteRepository clienteRepository;
+    private final ClienteValidator clienteValidator;
 
-    public void salvar(Cliente cliente) {
-        if (cliente.getId() == null) {
-            clienteRepository.save(cliente);
-        }
-        throw new IllegalArgumentException("Este cliente já está cadastrado!");
+    public Cliente salvar(Cliente cliente) {
+        clienteValidator.validar(cliente);
+        return clienteRepository.save(cliente);
     }
 
-    public void atualizar(Cliente cliente) {
-        if (cliente.getId() == null) {
-            throw new IllegalArgumentException("Impossível atualizar um cliente inexistente.");
-        }
-        clienteRepository.save(cliente);
+    public Cliente atualizar(Cliente cliente) {
+        clienteValidator.validar(cliente);
+        return clienteRepository.save(cliente);
     }
 
     public Optional<Cliente> acharPorId(UUID id) {

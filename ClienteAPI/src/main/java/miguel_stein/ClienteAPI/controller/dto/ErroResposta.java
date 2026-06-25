@@ -11,6 +11,6 @@ public record ErroResposta(int status, String mensagem, List<ErroCampo> errosCam
     }
 
     public static ErroResposta conflito(String mensagem) {
-        return new ErroResposta(HttpStatus.CONTINUE.value(), mensagem, List.of());
+        return new ErroResposta(HttpStatus.CONFLICT.value(), mensagem, List.of());
     }
 }

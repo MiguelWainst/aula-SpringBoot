@@ -16,17 +16,30 @@ public class ClienteValidator {
     private final ClienteRepository clienteRepository;
 
     public void validar(Cliente cliente) {
-        if (existeClienteCadastro(cliente)) {
-            throw new RegistroDuplicadoException("Erro: Este cliente já existe!");
+        if (existeCpfCadastro(cliente)) {
+            throw new RegistroDuplicadoException("Erro: Um cliente já existe com esse CPF!");
+        }
+        if (existeEmailCadastro(cliente)) {
+            throw new RegistroDuplicadoException("Erro: Email em uso.");
         }
     }
 
-    private boolean existeClienteCadastro(Cliente cliente) {
-        Optional<Cliente> clienteOptional = clienteRepository.findById(cliente.getId());
+    private boolean existeCpfCadastro(Cliente cliente) {
+        Optional<Cliente> clienteOptional = clienteRepository.findByCpf(cliente.getCpf());
         boolean present = clienteOptional.isPresent();
         if (cliente.getId() == null) {
             return present;
         }
         return present && !cliente.getId().equals(clienteOptional.get().getId());
     }
+
+    private boolean existeEmailCadastro(Cliente cliente) {
+        Optional<Cliente> clienteOptional = clienteRepository.findByEmail(cliente.getEmail());
+        boolean present = clienteOptional.isPresent();
+        if (cliente.getId() == null) {
+            return present;
+        }
+        return present && !cliente.getId().equals(clienteOptional.get().getId());
+    }
+
 }

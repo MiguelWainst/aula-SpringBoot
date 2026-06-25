@@ -13,6 +13,7 @@ import java.util.UUID;
 public interface ClienteRepository extends JpaRepository<Cliente, UUID> {
 
     Optional<Cliente> findByCpf(String cpf);
+    Optional<Cliente> findByEmail(String email);
 
     /* Usando JPQL e fazendo QueryMethods na mão. */
     @Query("select c from Cliente as c where upper(c.nome) like upper(concat('%', ?1, '%')) order by nome")

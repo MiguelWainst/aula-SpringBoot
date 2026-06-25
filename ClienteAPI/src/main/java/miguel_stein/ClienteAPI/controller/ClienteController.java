@@ -7,6 +7,7 @@ import miguel_stein.ClienteAPI.controller.dto.ErroResposta;
 import miguel_stein.ClienteAPI.exception.RegistroDuplicadoException;
 import miguel_stein.ClienteAPI.model.entity.Cliente;
 import miguel_stein.ClienteAPI.service.ClienteService;
+import miguel_stein.ClienteAPI.validators.ClienteValidator;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -28,9 +29,10 @@ public class ClienteController {
         try {
             Cliente cliente = clienteDTO.mapearParaCliente();
             clienteService.salvar(cliente);
+
             URI location = ServletUriComponentsBuilder
                     .fromCurrentRequest()
-                    .path("/id")
+                    .path("/{id}")
                     .buildAndExpand(cliente.getId())
                     .toUri();
 

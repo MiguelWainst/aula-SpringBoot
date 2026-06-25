@@ -63,8 +63,8 @@ public class AutorController {
             autorEntity.setNome(dto.nome());
             autorEntity.setNacionalidade(dto.nacionalidade());
             autorEntity.setDataNascimento(dto.dataNascimento());
-
             autorService.atualizar(autorEntity);
+
             return ResponseEntity.noContent().build();
         } catch (RegistroDuplicadoException e) {
             var erroDTO = ErroResposta.conflito(e.getMessage());
