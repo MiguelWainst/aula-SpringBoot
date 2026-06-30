@@ -21,12 +21,4 @@ public record AutorDTO(
         @Size(max = 50, min = 3, message = "Tamanho do campo é inválido.")
         String nacionalidade, UUID id
 ) {
-
-    public Autor mapearParaAutor() {
-        Autor autor = new Autor();
-        autor.setNome(this.nome);
-        autor.setDataNascimento(this.dataNascimento);
-        autor.setNacionalidade(this.nacionalidade);
-        return autor;
-    }
 }

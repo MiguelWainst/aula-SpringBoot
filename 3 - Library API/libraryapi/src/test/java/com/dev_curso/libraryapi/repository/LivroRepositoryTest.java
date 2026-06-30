@@ -139,12 +139,6 @@ class LivroRepositoryTest {
     }
 
     @Test
-    void buscarPorIsbnTest() {
-        List<Livro> livros = livroRepository.findByIsbn("10013-83080");
-        livros.forEach(System.out::println);
-    }
-
-    @Test
     void buscarPorTituloEPrecoTest() {
         BigDecimal preco = BigDecimal.valueOf(320.00);
         String titulo = "Elon Musk";

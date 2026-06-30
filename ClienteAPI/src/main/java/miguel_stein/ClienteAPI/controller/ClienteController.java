@@ -5,9 +5,9 @@ import lombok.RequiredArgsConstructor;
 import miguel_stein.ClienteAPI.controller.dto.ClienteDTO;
 import miguel_stein.ClienteAPI.controller.dto.ErroResposta;
 import miguel_stein.ClienteAPI.exception.RegistroDuplicadoException;
+import miguel_stein.ClienteAPI.mapper.ClienteMapper;
 import miguel_stein.ClienteAPI.model.entity.Cliente;
 import miguel_stein.ClienteAPI.service.ClienteService;
-import miguel_stein.ClienteAPI.validators.ClienteValidator;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -23,6 +23,7 @@ import java.util.UUID;
 public class ClienteController {
 
     private final ClienteService clienteService;
+    private final ClienteMapper mapper;
 
     @PostMapping
     public ResponseEntity<?> salvarCliente(@RequestBody @Valid ClienteDTO clienteDTO) {
@@ -74,13 +75,7 @@ public class ClienteController {
             return ResponseEntity.notFound().build();
         }
         Cliente cliente = clienteOptional.get();
-        ClienteDTO clienteDTO = new ClienteDTO(
-                cliente.getId(),
-                cliente.getNome(),
-                cliente.getDataNascimento(),
-                cliente.getEmail(),
-                cliente.getCpf()
-        );
+        ClienteDTO clienteDTO = mapper.toDTO(cliente);
         return ResponseEntity.ok(clienteDTO);
     }
 
@@ -91,13 +86,7 @@ public class ClienteController {
             return ResponseEntity.notFound().build();
         }
         Cliente cliente = clienteOptional.get();
-        ClienteDTO clienteDTO = new ClienteDTO(
-                cliente.getId(),
-                cliente.getNome(),
-                cliente.getDataNascimento(),
-                cliente.getEmail(),
-                cliente.getCpf()
-        );
+        ClienteDTO clienteDTO = mapper.toDTO(cliente);
         return ResponseEntity.ok().body(clienteDTO);
     }
 
@@ -106,14 +95,7 @@ public class ClienteController {
         List<Cliente> listCliente= clienteService.acharTodos();
         List<ClienteDTO> clienteDTOS = listCliente
                 .stream()
-                .map(cliente -> new ClienteDTO(
-                                cliente.getId(),
-                                cliente.getNome(),
-                                cliente.getDataNascimento(),
-                                cliente.getEmail(),
-                                cliente.getCpf()
-                        )
-                )
+                .map(mapper::toDTO)
                 .toList();
         return ResponseEntity.ok(clienteDTOS);
     }
@@ -123,13 +105,7 @@ public class ClienteController {
         List<Cliente> clientes = clienteService.listarClientesPorNome(nome);
         List<ClienteDTO> clientesDTOS = clientes.
                 stream().
-                map(cliente -> new ClienteDTO(
-                        cliente.getId(),
-                        cliente.getNome(),
-                        cliente.getDataNascimento(),
-                        cliente.getEmail(),
-                        cliente.getCpf()
-                ))
+                map(mapper::toDTO)
                 .toList();
         return ResponseEntity.ok(clientesDTOS);
     }

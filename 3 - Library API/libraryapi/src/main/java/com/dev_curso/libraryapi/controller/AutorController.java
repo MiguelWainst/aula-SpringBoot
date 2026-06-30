@@ -2,6 +2,7 @@ package com.dev_curso.libraryapi.controller;
 
 import com.dev_curso.libraryapi.controller.dto.AutorDTO;
 import com.dev_curso.libraryapi.controller.dto.ErroResposta;
+import com.dev_curso.libraryapi.controller.mappers.AutorMapper;
 import com.dev_curso.libraryapi.exceptions.OperacaoNaoPermitidaException;
 import com.dev_curso.libraryapi.exceptions.RegistroDuplicadoException;
 import com.dev_curso.libraryapi.model.Autor;
@@ -20,25 +21,22 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/autores") /* http://host:8080/autores */
 @RequiredArgsConstructor
-public class AutorController {
+public class AutorController implements GenericController{
 
     private final AutorService autorService;
+    private final AutorMapper mapper;
 
     /* Camada Rest, Camada View, API */
 
     @PostMapping
-    public ResponseEntity<?> salvar(@RequestBody @Valid AutorDTO autor) {
+    public ResponseEntity<?> salvar(@RequestBody @Valid AutorDTO autorDTO) {
         try {
-            Autor autorEntidade = autor.mapearParaAutor();
+            Autor autorEntidade = mapper.toEntity(autorDTO);
             autorService.salvar(autorEntidade);
 
             /* Vai retornar: http://host:8080/autores/{id} */
             /* Exemplo: http://host:8080/autores/a81e6eb2-ffe5-4a58-add9-77e00fc23144 */
-            URI location = ServletUriComponentsBuilder
-                    .fromCurrentRequest()
-                    .path("/{id}")
-                    .buildAndExpand(autorEntidade.getId())
-                    .toUri();
+            URI location = gerarHeaderLocation(autorEntidade.getId());
 
             return ResponseEntity.created(location).build();
         } catch (RegistroDuplicadoException e) {
@@ -75,13 +73,21 @@ public class AutorController {
     @GetMapping("{id}")
     public ResponseEntity<AutorDTO> obterAutor(@PathVariable String id) {
         var idAutor = UUID.fromString(id);
-        Optional<Autor> autorOptional = autorService.obterPorId(idAutor);
-        if (autorOptional.isPresent()) {
-            Autor autor = autorOptional.get();
-            AutorDTO dto = new AutorDTO(autor.getNome(), autor.getDataNascimento(), autor.getNacionalidade(), autor.getId());
-            return ResponseEntity.ok(dto);
-        }
-        return ResponseEntity.notFound().build();
+//        Optional<Autor> autorOptional = autorService.obterPorId(idAutor);
+
+        return autorService
+                .obterPorId(idAutor)
+                .map(autor -> {
+                    AutorDTO autorDTO = mapper.toDTO(autor);
+                    return ResponseEntity.ok(autorDTO);
+                }).orElseGet(() -> ResponseEntity.notFound().build());
+
+//        if (autorOptional.isPresent()) {
+//            Autor autor = autorOptional.get();
+//            AutorDTO dto = mapper.toDTO(autor);
+//            return ResponseEntity.ok(dto);
+//        }
+//        return ResponseEntity.notFound().build();
     }
 
     /* Usa-se o deleteById quando a tabela não possuir
@@ -126,12 +132,7 @@ public class AutorController {
         var listAutores = autorService.pesquisarAutores(nome, nacionalidade);
         List<AutorDTO> listaAutoresDto = listAutores
                 .stream()
-                .map(autor -> new AutorDTO(
-                        autor.getNome(),
-                        autor.getDataNascimento(),
-                        autor.getNacionalidade(),
-                        autor.getId()
-                ))
+                .map(mapper::toDTO)
                 .toList();
         return ResponseEntity.ok(listaAutoresDto);
     }
