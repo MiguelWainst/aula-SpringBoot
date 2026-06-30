@@ -10,9 +10,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,15 +25,20 @@ public class LivroController implements GenericController{
 
     @PostMapping
     public ResponseEntity<?> salvarLivro(@RequestBody @Valid LivroDTO livroDTO) {
-        try {
-            Livro livro = mapper.toEntity(livroDTO);
-            livroSerivce.salvar(livro);
-            URI location = gerarHeaderLocation(livro.getId());
+        Livro livro = mapper.toEntity(livroDTO);
+        livroSerivce.salvar(livro);
+        URI location = gerarHeaderLocation(livro.getId());
 
-            return ResponseEntity.created(location).build();
-        } catch (RegistroDuplicadoException e) {
-            ErroResposta erroResposta = ErroResposta.conflito(e.getMessage());
-            return ResponseEntity.status(erroResposta.status()).body(erroResposta);
+        return ResponseEntity.created(location).build();
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<?> obterLivroPorId(@PathVariable String id) {
+        Optional<Livro> livroOptional = livroSerivce.acharPorId(UUID.fromString(id));
+        if (livroOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
         }
+        LivroDTO livroDTO = mapper.toDTO(livroOptional.get());
+        return ResponseEntity.ok().body(livroDTO);
     }
 }

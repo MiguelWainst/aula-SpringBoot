@@ -2,7 +2,10 @@ package com.dev_curso.libraryapi.controller.common;
 
 import com.dev_curso.libraryapi.controller.dto.ErroCampo;
 import com.dev_curso.libraryapi.controller.dto.ErroResposta;
+import com.dev_curso.libraryapi.exceptions.OperacaoNaoPermitidaException;
+import com.dev_curso.libraryapi.exceptions.RegistroDuplicadoException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -30,6 +33,27 @@ public class GlobalExceptionHandler {
                 HttpStatus.UNPROCESSABLE_CONTENT.value(),
                 "Erro de validação.",
                 listErros
+        );
+    }
+
+    @ExceptionHandler(RegistroDuplicadoException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErroResposta handlerRegistroDuplicadoException(RegistroDuplicadoException e) {
+        return ErroResposta.conflito(e.getMessage());
+    }
+
+    @ExceptionHandler(OperacaoNaoPermitidaException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErroResposta handlerOperacaoNaoPermitidaException(OperacaoNaoPermitidaException e) {
+        return ErroResposta.respostaPadrao(e.getMessage());
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErroResposta handleErrosNaoTratados(RuntimeException e) {
+        return new ErroResposta(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Erro inesperado! Entre em contato com a administração",
+                List.of()
         );
     }
 }
