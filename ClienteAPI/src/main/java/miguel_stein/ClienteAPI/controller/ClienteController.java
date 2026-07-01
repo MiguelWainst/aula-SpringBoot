@@ -27,21 +27,16 @@ public class ClienteController {
 
     @PostMapping
     public ResponseEntity<?> salvarCliente(@RequestBody @Valid ClienteDTO clienteDTO) {
-        try {
-            Cliente cliente = clienteDTO.mapearParaCliente();
-            clienteService.salvar(cliente);
+        Cliente cliente = clienteDTO.mapearParaCliente();
+        clienteService.salvar(cliente);
 
-            URI location = ServletUriComponentsBuilder
-                    .fromCurrentRequest()
-                    .path("/{id}")
-                    .buildAndExpand(cliente.getId())
-                    .toUri();
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(cliente.getId())
+                .toUri();
 
-            return ResponseEntity.created(location).build();
-        } catch (RegistroDuplicadoException e) {
-            ErroResposta conflito = ErroResposta.conflito(e.getMessage());
-            return ResponseEntity.status(conflito.status()).body(conflito);
-        }
+        return ResponseEntity.created(location).build();
     }
 
     @PutMapping("{id}")
@@ -49,23 +44,18 @@ public class ClienteController {
             @RequestBody @Valid ClienteDTO clienteDTO,
             @PathVariable("id") String id
     ) {
-        try {
-            Optional<Cliente> clienteOptional = clienteService.acharPorId(UUID.fromString(id));
-            if (clienteOptional.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
-            Cliente cliente = clienteOptional.get();
-            cliente.setNome(clienteDTO.nome());
-            cliente.setDataNascimento(clienteDTO.dataNascimento());
-            cliente.setEmail(clienteDTO.email());
-            cliente.setCpf(clienteDTO.cpf());
-            clienteService.atualizar(cliente);
-
-            return ResponseEntity.ok().build();
-        } catch (RegistroDuplicadoException e) {
-            ErroResposta conflito = ErroResposta.conflito(e.getMessage());
-            return ResponseEntity.status(conflito.status()).body(conflito);
+        Optional<Cliente> clienteOptional = clienteService.acharPorId(UUID.fromString(id));
+        if (clienteOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
         }
+        Cliente cliente = clienteOptional.get();
+        cliente.setNome(clienteDTO.nome());
+        cliente.setDataNascimento(clienteDTO.dataNascimento());
+        cliente.setEmail(clienteDTO.email());
+        cliente.setCpf(clienteDTO.cpf());
+        clienteService.atualizar(cliente);
+
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("{id}")

@@ -7,7 +7,6 @@ import miguel_stein.ClienteAPI.repository.ClienteRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor

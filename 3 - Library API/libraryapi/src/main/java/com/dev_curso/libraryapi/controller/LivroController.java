@@ -24,7 +24,7 @@ public class LivroController implements GenericController{
     private final LivroMapper mapper;
 
     @PostMapping
-    public ResponseEntity<?> salvarLivro(@RequestBody @Valid LivroDTO livroDTO) {
+    public ResponseEntity<Void> salvarLivro(@RequestBody @Valid LivroDTO livroDTO) {
         Livro livro = mapper.toEntity(livroDTO);
         livroSerivce.salvar(livro);
         URI location = gerarHeaderLocation(livro.getId());

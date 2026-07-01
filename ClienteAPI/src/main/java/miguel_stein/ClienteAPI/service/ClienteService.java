@@ -1,6 +1,7 @@
 package miguel_stein.ClienteAPI.service;
 
 import lombok.RequiredArgsConstructor;
+import miguel_stein.ClienteAPI.exception.OperacaoNaoPermitida;
 import miguel_stein.ClienteAPI.model.entity.Cliente;
 import miguel_stein.ClienteAPI.repository.ClienteRepository;
 import miguel_stein.ClienteAPI.validators.ClienteValidator;
@@ -44,6 +45,14 @@ public class ClienteService {
     }
 
     public void deletarCliente(Cliente cliente) {
-        clienteRepository.delete(cliente);
+        if (existePorCpf(cliente.getCpf())) {
+            clienteRepository.delete(cliente);
+            return;
+        }
+        throw new OperacaoNaoPermitida("Impossível deletar um cliente que não existe (CPF nulo)");
+    }
+
+    public boolean existePorCpf(String cpf) {
+        return clienteRepository.findByCpf(cpf).isPresent();
     }
 }
