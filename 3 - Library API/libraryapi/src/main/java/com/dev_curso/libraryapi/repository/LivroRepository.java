@@ -49,7 +49,7 @@ public interface LivroRepository extends JpaRepository<Livro, UUID> {
 
     // JPQL
     @Query("select l from Livro as l order by l.titulo, l.preco") // Nome da propriedade no Java e nao no BD.
-    List<Livro> listAllLivroOrderByName();
+    Optional<List<Livro>> listAllLivroOrderByName();
 
     // SQL: select a.* from livro l join autor a on a.id = l.id_autor;
     @Query("select a from Livro l join l.autor a")

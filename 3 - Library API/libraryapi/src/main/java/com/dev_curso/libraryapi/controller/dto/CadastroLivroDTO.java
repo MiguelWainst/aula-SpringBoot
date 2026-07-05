@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
-public record LivroDTO(
+public record CadastroLivroDTO(
         @ISBN(message = "O campo deve conter um ISBN válido.")
         @NotBlank(message = "Campo obrigatório.")
         String isbn,

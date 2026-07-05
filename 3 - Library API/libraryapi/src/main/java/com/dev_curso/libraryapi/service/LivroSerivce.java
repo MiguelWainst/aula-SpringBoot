@@ -1,12 +1,12 @@
 package com.dev_curso.libraryapi.service;
 
-import com.dev_curso.libraryapi.controller.dto.LivroDTO;
 import com.dev_curso.libraryapi.model.Livro;
 import com.dev_curso.libraryapi.repository.LivroRepository;
 import com.dev_curso.libraryapi.validator.LivroValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,5 +29,13 @@ public class LivroSerivce {
     public void atualizar(Livro livro) {
         livroValidator.validar(livro);
         livroRepository.save(livro);
+    }
+
+    public Optional<List<Livro>> listarTodosLivros() {
+        return livroRepository.listAllLivroOrderByName();
+    }
+
+    public void deletarLivro(UUID id) {
+        livroRepository.deleteById(id);
     }
 }
