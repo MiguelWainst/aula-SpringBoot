@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -38,7 +39,8 @@ public class LivroController implements GenericController{
                 .map(livro -> {
                     var pesquisaLivroDTO = mapper.toDTO(livro);
                     return ResponseEntity.ok(pesquisaLivroDTO);
-                }).orElseGet(() -> ResponseEntity.notFound().build());
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping
@@ -55,17 +57,25 @@ public class LivroController implements GenericController{
         return ResponseEntity.ok(cadastroLivroDTOS);
     }
 
-    @DeleteMapping("{id}")
-    public ResponseEntity<Void> deletarLivro(@PathVariable String id) {
-        if (temLivroId(id)) {
-            livroSerivce.deletarLivro(UUID.fromString(id));
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+    @GetMapping
+    public ResponseEntity<List<Livro>> pesquisarLivrosParam(
+            @PathVariable String isbn,
+            @PathVariable String titulo,
+            @PathVariable String nomeAutor,
+            @PathVariable String genero,
+            @PathVariable LocalDate anoPublicacao
+            ) {
+
     }
 
-    private boolean temLivroId(String id) {
-        return livroSerivce.acharPorId(UUID.fromString(id)).isPresent();
+    @DeleteMapping("{id}")
+    public ResponseEntity<?> deletarLivro(@PathVariable String id) {
+        return livroSerivce.acharPorId(UUID.fromString(id))
+                .map(livro -> {
+                    livroSerivce.deletarLivro(livro);
+                    return ResponseEntity.ok().build();
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
 
