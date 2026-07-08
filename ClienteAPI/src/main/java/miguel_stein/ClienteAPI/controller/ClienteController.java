@@ -80,24 +80,37 @@ public class ClienteController {
         return ResponseEntity.ok().body(clienteDTO);
     }
 
-    @GetMapping
-    public ResponseEntity<List<ClienteDTO>> acharTodos() {
-        List<Cliente> listCliente= clienteService.acharTodos();
-        List<ClienteDTO> clienteDTOS = listCliente
+//    @GetMapping
+//    public ResponseEntity<List<ClienteDTO>> acharTodos() {
+//        List<Cliente> listCliente= clienteService.acharTodos();
+//        List<ClienteDTO> clienteDTOS = listCliente
+//                .stream()
+//                .map(mapper::toDTO)
+//                .toList();
+//        return ResponseEntity.ok(clienteDTOS);
+//    }
+
+//    @GetMapping("nomes")
+//    public ResponseEntity<List<ClienteDTO>> listarPorNome(@RequestParam String nome) {
+//        List<Cliente> clientes = clienteService.listarClientesPorNome(nome);
+//        List<ClienteDTO> clientesDTOS = clientes.
+//                stream().
+//                map(mapper::toDTO)
+//                .toList();
+//        return ResponseEntity.ok(clientesDTOS);
+//    }
+
+    @GetMapping("pesquisa")
+    public ResponseEntity<List<ClienteDTO>> pesquisaPorParam(
+            @RequestParam(required = false, value = "nome") String nome,
+            @RequestParam(required = false, value = "anoNascimento") Integer anoNascimento
+    ) {
+        var resultado = clienteService
+                .listarPorParams(nome, anoNascimento)
                 .stream()
                 .map(mapper::toDTO)
                 .toList();
-        return ResponseEntity.ok(clienteDTOS);
-    }
-
-    @GetMapping("nomes")
-    public ResponseEntity<List<ClienteDTO>> listarPorNome(@RequestParam String nome) {
-        List<Cliente> clientes = clienteService.listarClientesPorNome(nome);
-        List<ClienteDTO> clientesDTOS = clientes.
-                stream().
-                map(mapper::toDTO)
-                .toList();
-        return ResponseEntity.ok(clientesDTOS);
+        return ResponseEntity.ok(resultado);
     }
 
     @DeleteMapping("{id}")

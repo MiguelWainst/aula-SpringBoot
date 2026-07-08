@@ -5,11 +5,14 @@ import miguel_stein.ClienteAPI.exception.OperacaoNaoPermitida;
 import miguel_stein.ClienteAPI.model.entity.Cliente;
 import miguel_stein.ClienteAPI.repository.ClienteRepository;
 import miguel_stein.ClienteAPI.validators.ClienteValidator;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static miguel_stein.ClienteAPI.repository.specifications.ClienteSpecs.*;
 
 @Service
 @RequiredArgsConstructor
@@ -50,6 +53,19 @@ public class ClienteService {
             return;
         }
         throw new OperacaoNaoPermitida("Impossível deletar um cliente que não existe (CPF nulo)");
+    }
+
+    public List<Cliente> listarPorParams(String nome, Integer anoNascimento) {
+
+        Specification<Cliente> spec = Specification.where((root, query, cb) -> cb.conjunction());
+
+        if (nome != null) {
+            spec = spec.and(nomeLike(nome));
+        }
+        if (anoNascimento != null) {
+            spec = spec.and(anoEqual(anoNascimento));
+        }
+        return clienteRepository.findAll(spec);
     }
 
     public boolean existePorCpf(String cpf) {

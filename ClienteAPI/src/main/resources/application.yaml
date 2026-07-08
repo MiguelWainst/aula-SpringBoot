@@ -2,13 +2,14 @@ spring:
   application:
     name: ClienteAPI
   datasource:
-    url: jdbc:postgresql://localhost:5432/sistema_clientes
+    url: jdbc:postgresql://localhost:5432/cliente_api
     username: miguel
-    password: 123
+    password: '123'
     driver-class-name: org.postgresql.Driver
   jpa:
     show-sql: true
     hibernate:
       ddl-auto: update
     properties:
-      hibernate.format_sql: true
+      hibernate:
+        format_sql: true
