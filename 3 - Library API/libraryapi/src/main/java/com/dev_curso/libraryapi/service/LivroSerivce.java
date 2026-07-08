@@ -3,7 +3,6 @@ package com.dev_curso.libraryapi.service;
 import com.dev_curso.libraryapi.model.GeneroLivro;
 import com.dev_curso.libraryapi.model.Livro;
 import com.dev_curso.libraryapi.repository.LivroRepository;
-import com.dev_curso.libraryapi.repository.Specifications.LivroSpecs;
 import com.dev_curso.libraryapi.validator.LivroValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
@@ -52,9 +51,11 @@ public class LivroSerivce {
             specs = specs.and(generoEqual(genero));
         }
         if (anoPublicacao != null) {
-            specs = specs.and(anoEqual(anoPublicacao));
+            specs = specs.and(anoPublicacaoEqual(anoPublicacao));
         }
-
+        if (nomeAutor != null) {
+            specs = specs.and(nomeAutorLike(nomeAutor));
+        }
         return livroRepository.findAll(specs);
     }
 

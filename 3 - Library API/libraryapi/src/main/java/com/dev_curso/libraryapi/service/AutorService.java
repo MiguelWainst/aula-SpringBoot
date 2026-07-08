@@ -61,18 +61,20 @@ public class AutorService {
         autorRepository.delete(autor);
     }
 
-    public List<Autor> pesquisarAutores(String nome, String nacionalidade) {
-        if(nome != null && nacionalidade != null) {
-            return autorRepository.findByNomeContainingAndNacionalidade(nome, nacionalidade);
-        }
-        if (nome != null) {
-            return autorRepository.findByNomeContaining(nome);
-        }
-        if (nacionalidade != null) {
-            return  autorRepository.findByNacionalidade(nacionalidade);
-        }
-        return autorRepository.findAll();
-    }
+    /* Pesquisa por Parametros de um jeito mais simples */
+//    public List<Autor> pesquisarAutores(String nome, String nacionalidade) {
+//        if(nome != null && nacionalidade != null) {
+//            return autorRepository.findByNomeContainingAndNacionalidade(nome, nacionalidade);
+//        }
+//        if (nome != null) {
+//            return autorRepository.findByNomeContaining(nome);
+//        }
+//        if (nacionalidade != null) {
+//            return  autorRepository.findByNacionalidade(nacionalidade);
+//        }
+//        return autorRepository.findAll();
+//    }
+
 
     public List<Autor> pesquisaParams(String nome, String nacionalidade, Integer anoNasicmento) {
         Specification<Autor> specs = Specification.where((root, query, cb) -> cb.conjunction());

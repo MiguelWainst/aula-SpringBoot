@@ -110,6 +110,7 @@ public class AutorController implements GenericController{
         return ResponseEntity.noContent().build();
     }
 
+    /* Pesquisa por Parametros de um jeito mais simples */
 //    @GetMapping
 //    public ResponseEntity<List<AutorDTO>> pesquisarAutores(
 //            @RequestParam(value = "nome", required = false) String nome,
