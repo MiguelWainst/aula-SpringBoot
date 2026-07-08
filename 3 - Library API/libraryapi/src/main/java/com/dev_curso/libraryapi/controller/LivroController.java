@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -58,6 +59,25 @@ public class LivroController implements GenericController{
                 .map(mapper::toDTO)
                 .toList();
         return ResponseEntity.ok(pesquisa);
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<Object> atualizarLivro(
+            @RequestBody @Valid CadastroLivroDTO livroDTO,
+            @PathVariable String id
+    ) {
+        return livroSerivce.acharPorId(UUID.fromString(id))
+                .map(livro -> {
+                    Livro entityAux = mapper.toEntity(livroDTO);
+                    livro.setIsbn(entityAux.getIsbn());
+                    livro.setDataPublicacao(entityAux.getDataPublicacao());
+                    livro.setPreco(entityAux.getPreco());
+                    livro.setTitulo(entityAux.getTitulo());
+                    livro.setGenero(entityAux.getGenero());
+                    livro.setAutor(entityAux.getAutor());
+                    livroSerivce.atualizar(livro);
+                    return ResponseEntity.ok().build();
+                }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("{id}")

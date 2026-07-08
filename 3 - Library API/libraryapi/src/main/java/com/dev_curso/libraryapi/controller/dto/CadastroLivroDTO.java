@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 public record CadastroLivroDTO(
-        @ISBN(message = "O campo deve conter um ISBN válido.")
+//        @ISBN(message = "O campo deve conter um ISBN válido.")
         @NotBlank(message = "Campo obrigatório.")
         String isbn,
         @NotBlank(message = "Campo obrigatório.")
