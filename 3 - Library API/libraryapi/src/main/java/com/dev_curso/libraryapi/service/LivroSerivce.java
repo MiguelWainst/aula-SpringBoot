@@ -36,10 +36,6 @@ public class LivroSerivce {
         livroRepository.save(livro);
     }
 
-    public Optional<List<Livro>> listarTodosLivros() {
-        return livroRepository.listAllLivroOrderByName();
-    }
-
     public List<Livro> pesquisarParam(String isbn, String titulo, String nomeAutor, GeneroLivro genero, Integer anoPublicacao) {
 
         // import static com.dev_curso.libraryapi.repository.Specifications.LivroSpecs.*;
@@ -49,13 +45,14 @@ public class LivroSerivce {
         if (isbn != null) {
             specs = specs.and(isbnEqual(isbn));
         }
-
         if (titulo != null) {
             specs = specs.and(tituloLike(titulo));
         }
-
         if (genero != null) {
             specs = specs.and(generoEqual(genero));
+        }
+        if (anoPublicacao != null) {
+            specs = specs.and(anoEqual(anoPublicacao));
         }
 
         return livroRepository.findAll(specs);

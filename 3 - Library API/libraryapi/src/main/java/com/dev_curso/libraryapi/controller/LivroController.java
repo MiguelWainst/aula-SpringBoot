@@ -3,6 +3,7 @@ package com.dev_curso.libraryapi.controller;
 import com.dev_curso.libraryapi.controller.dto.CadastroLivroDTO;
 import com.dev_curso.libraryapi.controller.dto.PesquisaLivroDTO;
 import com.dev_curso.libraryapi.controller.mappers.LivroMapper;
+import com.dev_curso.libraryapi.model.GeneroLivro;
 import com.dev_curso.libraryapi.model.Livro;
 import com.dev_curso.libraryapi.service.LivroSerivce;
 import jakarta.validation.Valid;
@@ -44,28 +45,19 @@ public class LivroController implements GenericController{
     }
 
     @GetMapping
-    public ResponseEntity<List<PesquisaLivroDTO>> listarTodosLivros() {
-        Optional<List<Livro>> livrosOptional = livroSerivce.listarTodosLivros();
-        if (livrosOptional.isEmpty()){
-            return ResponseEntity.notFound().build();
-        }
-        List<PesquisaLivroDTO> cadastroLivroDTOS = livrosOptional
-                .get()
+    public ResponseEntity<List<PesquisaLivroDTO>> pesquisarLivrosParam(
+            @RequestParam(required = false, value = "isbn") String isbn,
+            @RequestParam(required = false, value = "titulo") String titulo,
+            @RequestParam(required = false, value = "nomeAutor") String nomeAutor,
+            @RequestParam(required = false, value = "genero") GeneroLivro genero,
+            @RequestParam(required = false, value = "anoPublicacao") Integer anoPublicacao
+            ) {
+
+        var pesquisa = livroSerivce.pesquisarParam(isbn, titulo, nomeAutor, genero, anoPublicacao)
                 .stream()
                 .map(mapper::toDTO)
                 .toList();
-        return ResponseEntity.ok(cadastroLivroDTOS);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<Livro>> pesquisarLivrosParam(
-            @PathVariable String isbn,
-            @PathVariable String titulo,
-            @PathVariable String nomeAutor,
-            @PathVariable String genero,
-            @PathVariable LocalDate anoPublicacao
-            ) {
-
+        return ResponseEntity.ok(pesquisa);
     }
 
     @DeleteMapping("{id}")
