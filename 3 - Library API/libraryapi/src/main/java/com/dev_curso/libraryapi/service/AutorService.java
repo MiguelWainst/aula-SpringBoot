@@ -6,11 +6,14 @@ import com.dev_curso.libraryapi.repository.AutorRepository;
 import com.dev_curso.libraryapi.repository.LivroRepository;
 import com.dev_curso.libraryapi.validator.AutorValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static com.dev_curso.libraryapi.repository.Specifications.AutorSpecs.*;
 
 @Service
 @RequiredArgsConstructor
@@ -69,6 +72,22 @@ public class AutorService {
             return  autorRepository.findByNacionalidade(nacionalidade);
         }
         return autorRepository.findAll();
+    }
+
+    public List<Autor> pesquisaParams(String nome, String nacionalidade, Integer anoNasicmento) {
+        Specification<Autor> specs = Specification.where((root, query, cb) -> cb.conjunction());
+
+        if (nome != null) {
+            specs = specs.and(nomeLike(nome));
+        }
+        if (nacionalidade != null) {
+            specs = specs.and(nacionalidadeEqual(nacionalidade));
+        }
+        if (anoNasicmento != null) {
+            specs = specs.and(anoEqual(anoNasicmento));
+        }
+
+        return autorRepository.findAll(specs);
     }
 
     private boolean temLivro(Autor autor) {

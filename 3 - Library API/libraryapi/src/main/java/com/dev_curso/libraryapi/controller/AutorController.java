@@ -110,16 +110,30 @@ public class AutorController implements GenericController{
         return ResponseEntity.noContent().build();
     }
 
+//    @GetMapping
+//    public ResponseEntity<List<AutorDTO>> pesquisarAutores(
+//            @RequestParam(value = "nome", required = false) String nome,
+//            @RequestParam(value = "nacionalidade", required = false) String nacionalidade) {
+//        var listAutores = autorService.pesquisarAutores(nome, nacionalidade);
+//        List<AutorDTO> listaAutoresDto = listAutores
+//                .stream()
+//                .map(mapper::toDTO)
+//                .toList();
+//        return ResponseEntity.ok(listaAutoresDto);
+//    }
+
     @GetMapping
-    public ResponseEntity<List<AutorDTO>> pesquisarAutores(
-            @RequestParam(value = "nome", required = false) String nome,
-            @RequestParam(value = "nacionalidade", required = false) String nacionalidade) {
-        var listAutores = autorService.pesquisarAutores(nome, nacionalidade);
-        List<AutorDTO> listaAutoresDto = listAutores
+    public ResponseEntity<List<AutorDTO>> pesquisa(
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) String nacionalidade,
+            @RequestParam(required = false) Integer anoNascimento
+    ) {
+        var listaPesquisa = autorService.pesquisaParams(nome, nacionalidade, anoNascimento);
+        List<AutorDTO> listaDTO = listaPesquisa
                 .stream()
                 .map(mapper::toDTO)
                 .toList();
-        return ResponseEntity.ok(listaAutoresDto);
+        return ResponseEntity.ok(listaDTO);
     }
 
 }
