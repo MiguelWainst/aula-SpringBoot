@@ -8,6 +8,7 @@ import com.dev_curso.libraryapi.model.Livro;
 import com.dev_curso.libraryapi.service.LivroSerivce;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,19 +47,18 @@ public class LivroController implements GenericController{
     }
 
     @GetMapping
-    public ResponseEntity<List<PesquisaLivroDTO>> pesquisarLivrosParam(
+    public ResponseEntity<Page<PesquisaLivroDTO>> pesquisarLivrosParam(
             @RequestParam(required = false, value = "isbn") String isbn,
             @RequestParam(required = false, value = "titulo") String titulo,
             @RequestParam(required = false, value = "nomeAutor") String nomeAutor,
             @RequestParam(required = false, value = "genero") GeneroLivro genero,
-            @RequestParam(required = false, value = "anoPublicacao") Integer anoPublicacao
-            ) {
-
-        var pesquisa = livroSerivce.pesquisarParam(isbn, titulo, nomeAutor, genero, anoPublicacao)
-                .stream()
-                .map(mapper::toDTO)
-                .toList();
-        return ResponseEntity.ok(pesquisa);
+            @RequestParam(required = false, value = "anoPublicacao") Integer anoPublicacao,
+            @RequestParam(value = "pagina", defaultValue = "0") Integer pagina,
+            @RequestParam(value = "tamanho-pagina", defaultValue = "10") Integer tamanhoPagina
+    ) {
+        Page<Livro> livrosPage = livroSerivce.pesquisarParam(isbn, titulo, nomeAutor, genero, anoPublicacao, pagina, tamanhoPagina);
+        Page<PesquisaLivroDTO> resultado = livrosPage.map(mapper::toDTO);
+        return ResponseEntity.ok(resultado);
     }
 
     @PutMapping("{id}")

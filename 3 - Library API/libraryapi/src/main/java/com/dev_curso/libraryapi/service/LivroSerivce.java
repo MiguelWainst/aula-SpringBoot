@@ -5,6 +5,9 @@ import com.dev_curso.libraryapi.model.Livro;
 import com.dev_curso.libraryapi.repository.LivroRepository;
 import com.dev_curso.libraryapi.validator.LivroValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -35,8 +38,15 @@ public class LivroSerivce {
         livroRepository.save(livro);
     }
 
-    public List<Livro> pesquisarParam(String isbn, String titulo, String nomeAutor, GeneroLivro genero, Integer anoPublicacao) {
-
+    public Page<Livro> pesquisarParam(
+            String isbn,
+            String titulo,
+            String nomeAutor,
+            GeneroLivro genero,
+            Integer anoPublicacao,
+            Integer pagina,
+            Integer tamanhoPagina
+    ) {
         // import static com.dev_curso.libraryapi.repository.Specifications.LivroSpecs.*;
         /* select * from livro where 0 = 0 */
         Specification<Livro> specs = Specification.where( (root, query, cb) -> cb.conjunction());
@@ -56,7 +66,9 @@ public class LivroSerivce {
         if (nomeAutor != null) {
             specs = specs.and(nomeAutorLike(nomeAutor));
         }
-        return livroRepository.findAll(specs);
+
+        Pageable pageRequest = PageRequest.of(pagina, tamanhoPagina);
+        return livroRepository.findAll(specs, pageRequest);
     }
 
     public void deletarLivro(Livro livro) {
