@@ -22,7 +22,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, ConfigurableObject configurableObject) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable) // Desabilitar o csrf faz com que minha aplicação possa receber o front de outros lugares.
-                .formLogin(withDefaults())
+                .formLogin(config -> config.loginPage("/login").permitAll())
                 .httpBasic(withDefaults())
                 .authorizeHttpRequests(authorize -> {
                     authorize.anyRequest().authenticated(); // Dita que qualquer requisição feita para esta API tem que estar autenticado
