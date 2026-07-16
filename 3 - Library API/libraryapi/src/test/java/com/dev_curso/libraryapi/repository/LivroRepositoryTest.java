@@ -147,12 +147,6 @@ class LivroRepositoryTest {
     }
 
     @Test
-    void listarLivrosComJPQL() {
-        var resultado = livroRepository.listAllLivroOrderByName();
-        resultado.forEach(System.out::println);
-    }
-
-    @Test
     void listarAutoresDosLivros() {
         var resultado = livroRepository.listAutorOfLivros();
         resultado.forEach(System.out::println);

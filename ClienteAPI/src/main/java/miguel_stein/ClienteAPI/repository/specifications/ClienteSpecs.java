@@ -11,7 +11,9 @@ public class ClienteSpecs {
 
     public static Specification<Cliente> anoEqual(Integer anoNascimento) {
         // to_char(data_publicacao, 'YYYY') = anoPublicacao
-        return (root, query, cb) -> cb.equal(cb.function("to_char", String.class, root.get("dataNascimento"), cb.literal("YYYY")), anoNascimento.toString());
+        return (root, query, cb) ->
+                cb.equal(cb.function("to_char", String.class, root.get("dataNascimento"),
+                        cb.literal("YYYY")), anoNascimento.toString());
     }
 
 }

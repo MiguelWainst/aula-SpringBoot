@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/autores") /* http://host:8080/autores */
 @RequiredArgsConstructor
 public class AutorController implements GenericController{

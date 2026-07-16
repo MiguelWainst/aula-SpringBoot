@@ -8,6 +8,7 @@ import miguel_stein.ClienteAPI.exception.RegistroDuplicadoException;
 import miguel_stein.ClienteAPI.mapper.ClienteMapper;
 import miguel_stein.ClienteAPI.model.entity.Cliente;
 import miguel_stein.ClienteAPI.service.ClienteService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -101,15 +102,14 @@ public class ClienteController {
 //    }
 
     @GetMapping("pesquisa")
-    public ResponseEntity<List<ClienteDTO>> pesquisaPorParam(
+    public ResponseEntity<Page<ClienteDTO>> pesquisaPorParam(
             @RequestParam(required = false, value = "nome") String nome,
-            @RequestParam(required = false, value = "anoNascimento") Integer anoNascimento
+            @RequestParam(required = false, value = "anoNascimento") Integer anoNascimento,
+            @RequestParam(defaultValue = "0") Integer pagina,
+            @RequestParam(defaultValue = "10") Integer tamanhoPagina
     ) {
-        var resultado = clienteService
-                .listarPorParams(nome, anoNascimento)
-                .stream()
-                .map(mapper::toDTO)
-                .toList();
+        Page<Cliente> clientesPage = clienteService.listarPorParams(nome, anoNascimento, pagina, tamanhoPagina);
+        Page<ClienteDTO> resultado = clientesPage.map(mapper::toDTO);
         return ResponseEntity.ok(resultado);
     }
 

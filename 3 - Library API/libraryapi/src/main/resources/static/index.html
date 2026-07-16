@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel de Testes · API Biblioteca</title>
+  <style>
+    :root{
+      --bg: #0f1420;
+      --sidebar: #141a2b;
+      --panel: #ffffff;
+      --panel-alt: #f5f7fb;
+      --border: #e3e7ef;
+      --text: #1c2333;
+      --text-dim: #6b7385;
+      --accent: #3a5ceb;
+      --accent-dim: #eaeefd;
+      --danger: #d64545;
+      --danger-bg: #fdecec;
+      --success: #1f9d55;
+      --success-bg: #e9f9ef;
+      --radius: 10px;
+      font-size: 15px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--panel-alt);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      flex-shrink: 0;
+      background: var(--sidebar);
+      color: #cfd6e8;
+      display: flex;
+      flex-direction: column;
+      padding: 24px 0;
+    }
+    .sidebar .brand {
+      font-weight: 700;
+      font-size: 17px;
+      color: #fff;
+      padding: 0 24px 20px 24px;
+      letter-spacing: -0.02em;
+    }
+    .sidebar .brand small {
+      display: block;
+      font-weight: 400;
+      font-size: 12px;
+      color: #8892ab;
+      margin-top: 4px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 24px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      border-left: 3px solid transparent;
+      transition: background .15s, color .15s;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.04); color: #fff; }
+    .nav-item.active {
+      background: rgba(58,92,235,0.15);
+      color: #fff;
+      border-left-color: var(--accent);
+    }
+    .nav-item .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .5; }
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 16px 24px 0 24px;
+      font-size: 12px;
+      color: #5c6580;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      padding: 4px 8px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 6px;
+      font-size: 11px;
+    }
+    .status-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: #4dd67c; }
+
+    /* Main Content */
+    .main {
+      flex: 1;
+      padding: 32px 40px;
+      max-width: 1400px; /* Expandido para aproveitar melhor monitores widescreen */
+      width: calc(100% - 240px);
+    }
+    .view { display: none; }
+    .view.active { display: block; }
+    .view-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .view-header h1 { font-size: 24px; margin: 0 0 6px 0; letter-spacing: -0.02em; }
+    .view-header p { margin: 0; color: var(--text-dim); font-size: 14px; }
+
+    /* Buttons */
+    .btn {
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: filter .15s, transform .05s;
+      white-space: nowrap; /* Impede o texto do botão de quebrar linha ou cortar */
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { filter: brightness(1.08); }
+    .btn-secondary { background: #fff; color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: var(--panel-alt); }
+    .btn-danger { background: var(--danger-bg); color: var(--danger); }
+    .btn-danger:hover { filter: brightness(0.97); }
+    .btn-sm { padding: 6px 12px; font-size: 12.5px; border-radius: 6px; }
+
+    /* NOVO FILTER BAR: Responsivo e Alinhado no PC */
+    .filter-bar {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      flex-wrap: wrap; /* Permite que os campos quebrem linha elegantemente no PC se a janela encolher */
+      gap: 16px;
+      margin-bottom: 24px;
+      align-items: flex-end;
+    }
+
+    /* Distribuição proporcional dos campos no Desktop */
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { font-size: 11px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: .05em; }
+    .field input, .field select {
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      font-size: 13.5px;
+      font-family: inherit;
+      color: var(--text);
+      background: #fff;
+      width: 100%;
+      min-width: 120px;
+      height: 40px;
+    }
+    .field input:focus, .field select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(58,92,235,0.1); }
+
+    /* Tamanhos específicos para evitar distorções no PC */
+    .filter-bar .field:nth-child(1) { flex: 1.2; min-width: 140px; } /* ISBN */
+    .filter-bar .field:nth-child(2) { flex: 2; min-width: 180px; }   /* Título */
+    .filter-bar .field:nth-child(3) { flex: 2; min-width: 180px; }   /* Autor */
+    .filter-bar .field:nth-child(4) { flex: 1.2; min-width: 130px; } /* Gênero */
+    .filter-bar .field:nth-child(5) { flex: 0.8; min-width: 100px; } /* Ano */
+
+    /* Ações do Filtro fixas para NUNCA cortarem os botões */
+    .filter-actions {
+      display: flex;
+      gap: 8px;
+      flex: 1;
+      min-width: 190px; /* Garante espaço para os dois botões lado a lado */
+      justify-content: flex-end;
+    }
+    .filter-actions .btn {
+      flex: 1;
+      height: 40px;
+    }
+
+    /* Table */
+    .table-wrap {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      text-align: left;
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: .03em;
+      color: var(--text-dim);
+      background: var(--panel-alt);
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+    }
+    tbody td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      vertical-align: middle;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: #fbfcfe; }
+    .row-actions { display: flex; gap: 8px; justify-content: flex-end; }
+    .empty-state {
+      padding: 48px 20px;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 13.5px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 20px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+    .pagination .controls { display: flex; gap: 8px; align-items: center; }
+
+    /* Modal */
+    .overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(15,20,32,0.5);
+      align-items: center; justify-content: center;
+      z-index: 100;
+      padding: 20px;
+    }
+    .overlay.active { display: flex; }
+    .modal {
+      background: #fff;
+      border-radius: 14px;
+      width: 100%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    }
+    .modal-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-header h2 { font-size: 16px; margin: 0; }
+    .modal-close { background: none; border: none; font-size: 18px; color: var(--text-dim); cursor: pointer; line-height: 1; }
+    .modal-body { padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
+    .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+
+    /* Error box */
+    .error-box {
+      background: var(--danger-bg);
+      border: 1px solid #f3c6c6;
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      font-size: 13px;
+    }
+    .error-box .error-title { font-weight: 700; color: var(--danger); margin-bottom: 6px; }
+    .error-box ul { margin: 0; padding-left: 18px; color: #7a2a2a; }
+    .error-box li { margin-bottom: 2px; }
+
+    .toast-container {
+      position: fixed; top: 20px; right: 20px; z-index: 200;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .toast {
+      background: var(--text);
+      color: #fff;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      animation: slidein .2s ease;
+      max-width: 320px;
+    }
+    .toast.success { background: var(--success); }
+    .toast.error { background: var(--danger); }
+    @keyframes slidein { from { transform: translateX(20px); opacity:0; } to { transform: translateX(0); opacity:1; } }
+
+    small.hint { color: var(--text-dim); font-size: 11.5px; }
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="brand">📚 Biblioteca API<small>localhost:8080</small></div>
+  <div class="nav-item active" data-view="livros"><span class="dot"></span> Livros</div>
+  <div class="nav-item" data-view="autores"><span class="dot"></span> Autores</div>
+  <div class="sidebar-footer">
+    Console de testes CRUD
+    <div class="status-pill"><span class="dot"></span> API local</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="view active" id="view-livros">
+    <div class="view-header">
+      <div>
+        <h1>Livros</h1>
+        <p>Pesquise, cadastre e gerencie o catálogo de livros.</p>
+      </div>
+      <button class="btn btn-primary" onclick="openLivroModal()">+ Novo livro</button>
+    </div>
+
+    <div id="livros-error-slot"></div>
+
+    <div class="filter-bar">
+      <div class="field"><label>ISBN</label><input id="f-isbn" placeholder="978-..."></div>
+      <div class="field"><label>Título</label><input id="f-titulo" placeholder="Título"></div>
+      <div class="field"><label>Autor</label><input id="f-nomeAutor" placeholder="Nome do autor"></div>
+      <div class="field">
+        <label>Gênero</label>
+        <select id="f-genero">
+          <option value="">Todos</option>
+          <option value="FICCAO">Ficção</option>
+          <option value="FANTASIA">Fantasia</option>
+          <option value="MISTERIO">Mistério</option>
+          <option value="ROMANCE">Romance</option>
+          <option value="BIOGRAFIA">Biografia</option>
+          <option value="CIENCIA">Ciência</option>
+        </select>
+      </div>
+      <div class="field"><label>Ano</label><input id="f-ano" type="number" placeholder="2024"></div>
+      <div class="filter-actions">
+        <button class="btn btn-secondary" onclick="resetLivroFiltros()">Limpar</button>
+        <button class="btn btn-primary" onclick="fetchLivros(0)">Pesquisar</button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+        <tr>
+          <th>Título</th>
+          <th>ISBN</th>
+          <th>Autor</th>
+          <th>Gênero</th>
+          <th>Publicação</th>
+          <th>Preço</th>
+          <th style="text-align:right">Ações</th>
+        </tr>
+        </thead>
+        <tbody id="livros-tbody">
+        <tr><td colspan="7" class="empty-state">Carregando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination">
+      <span id="livros-page-info">—</span>
+      <div class="controls">
+        <button class="btn btn-secondary btn-sm" id="btn-prev-page" onclick="prevPage()">← Anterior</button>
+        <button class="btn btn-secondary btn-sm" id="btn-next-page" onclick="nextPage()">Próxima →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="view" id="view-autores">
+    <div class="view-header">
+      <div>
+        <h1>Autores</h1>
+        <p>Pesquise, cadastre e gerencie autores.</p>
+      </div>
+      <button class="btn btn-primary" onclick="openAutorModal()">+ Novo autor</button>
+    </div>
+
+    <div id="autores-error-slot"></div>
+
+    <div class="filter-bar">
+      <div class="field"><label>Nome</label><input id="af-nome" placeholder="Nome"></div>
+      <div class="field"><label>Nacionalidade</label><input id="af-nacionalidade" placeholder="Nacionalidade"></div>
+      <div class="field"><label>Ano de nascimento</label><input id="af-ano" type="number" placeholder="1980"></div>
+      <div class="filter-actions">
+        <button class="btn btn-secondary" onclick="resetAutorFiltros()">Limpar</button>
+        <button class="btn btn-primary" onclick="fetchAutores()">Pesquisar</button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Nacionalidade</th>
+          <th>Nascimento</th>
+          <th>ID</th>
+          <th style="text-align:right">Ações</th>
+        </tr>
+        </thead>
+        <tbody id="autores-tbody">
+        <tr><td colspan="5" class="empty-state">Carregando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<div class="overlay" id="livro-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="livro-modal-title">Novo livro</h2>
+      <button class="modal-close" onclick="closeLivroModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="livro-modal-error-slot"></div>
+      <input type="hidden" id="livro-id">
+      <div class="field"><label>ISBN</label><input id="l-isbn" placeholder="978-3-16-148410-0"></div>
+      <div class="field"><label>Título</label><input id="l-titulo" placeholder="Título do livro"></div>
+      <div class="field">
+        <label>Gênero</label>
+        <select id="l-genero">
+          <option value="FICCAO">Ficção</option>
+          <option value="FANTASIA">Fantasia</option>
+          <option value="MISTERIO">Mistério</option>
+          <option value="ROMANCE">Romance</option>
+          <option value="BIOGRAFIA">Biografia</option>
+          <option value="CIENCIA">Ciência</option>
+        </select>
+      </div>
+      <div class="field"><label>Data de publicação</label><input id="l-dataPublicacao" type="date"></div>
+      <div class="field"><label>Preço</label><input id="l-preco" type="number" step="0.01" placeholder="49.90"></div>
+      <div class="field">
+        <label>Autor</label>
+        <select id="l-idAutor"><option value="">Selecione um autor...</option></select>
+        <small class="hint">Lista carregada de /autores. Cadastre um autor primeiro, se necessário.</small>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeLivroModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveLivro()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="autor-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="autor-modal-title">Novo autor</h2>
+      <button class="modal-close" onclick="closeAutorModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="autor-modal-error-slot"></div>
+      <input type="hidden" id="autor-id">
+      <div class="field"><label>Nome</label><input id="a-nome" placeholder="Nome completo"></div>
+      <div class="field"><label>Nacionalidade</label><input id="a-nacionalidade" placeholder="Nacionalidade"></div>
+      <div class="field"><label>Data de nascimento</label><input id="a-dataNascimento" type="date"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeAutorModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveAutor()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+  // O JavaScript permanece o mesmo para manter a lógica original intacta.
+  const API_BASE = 'http://localhost:8080';
+  const GENERO_LABELS = { FICCAO:'Ficção', FANTASIA:'Fantasia', MISTERIO:'Mistério', ROMANCE:'Romance', BIOGRAFIA:'Biografia', CIENCIA:'Ciência' };
+
+  let currentPage = 0;
+  let pageSize = 10;
+  let lastPageData = null;
+  let autoresCache = [];
+
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      item.classList.add('active');
+      document.getElementById('view-' + item.dataset.view).classList.add('active');
+    });
+  });
+
+  function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    const el = document.createElement('div');
+    el.className = 'toast ' + type;
+    el.textContent = message;
+    container.appendChild(el);
+    setTimeout(() => el.remove(), 3500);
+  }
+
+  function renderErro(slotId, erroResposta, fallbackMsg) {
+    const slot = document.getElementById(slotId);
+    if (!erroResposta) {
+      slot.innerHTML = `<div class="error-box"><div class="error-title">Erro</div>${fallbackMsg || 'Ocorreu um erro inesperado.'}</div>`;
+      return;
+    }
+    const { mensagem, erros } = erroResposta;
+    let html = `<div class="error-box"><div class="error-title">${mensagem || 'Não foi possível concluir a operação'}</div>`;
+    if (Array.isArray(erros) && erros.length) {
+      html += '<ul>' + erros.map(e => `<li><strong>${escapeHtml(e.campo || '')}:</strong> ${escapeHtml(e.erro || '')}</li>`).join('') + '</ul>';
+    }
+    html += '</div>';
+    slot.innerHTML = html;
+  }
+  function clearErro(slotId) { document.getElementById(slotId).innerHTML = ''; }
+
+  async function parseErrorResponse(response) {
+    try {
+      const data = await response.json();
+      return data;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  async function apiRequest(path, options = {}) {
+    let response;
+    try {
+      response = await fetch(API_BASE + path, {
+        headers: { 'Content-Type': 'application/json' },
+        ...options
+      });
+    } catch (networkErr) {
+      throw { networkError: true, message: 'Não foi possível conectar à API em ' + API_BASE + '. Verifique se ela está em execução.' };
+    }
+
+    if (response.status === 400 || response.status === 409 || response.status === 422 || response.status === 500) {
+      const erro = await parseErrorResponse(response);
+      throw { apiError: true, status: response.status, erro };
+    }
+
+    if (!response.ok) {
+      throw { apiError: true, status: response.status, erro: null };
+    }
+
+    const text = await response.text();
+    return text ? JSON.parse(text) : null;
+  }
+
+  function buildLivroQuery(pagina) {
+    const params = new URLSearchParams();
+    const isbn = document.getElementById('f-isbn').value.trim();
+    const titulo = document.getElementById('f-titulo').value.trim();
+    const nomeAutor = document.getElementById('f-nomeAutor').value.trim();
+    const genero = document.getElementById('f-genero').value;
+    const ano = document.getElementById('f-ano').value;
+
+    if (isbn) params.set('isbn', isbn);
+    if (titulo) params.set('titulo', titulo);
+    if (nomeAutor) params.set('nomeAutor', nomeAutor);
+    if (genero) params.set('genero', genero);
+    if (ano) params.set('anoPublicacao', ano);
+    params.set('pagina', pagina ?? currentPage);
+    params.set('tamanho-pagina', pageSize);
+    return params.toString();
+  }
+
+  async function fetchLivros(pagina = 0) {
+    clearErro('livros-error-slot');
+    currentPage = pagina;
+    const tbody = document.getElementById('livros-tbody');
+    tbody.innerHTML = `<tr><td colspan="7" class="empty-state">Carregando...</td></tr>`;
+    try {
+      const query = buildLivroQuery(pagina);
+      const data = await apiRequest('/livros?' + query);
+      lastPageData = data;
+      renderLivros(data);
+    } catch (err) {
+      handleFetchError(err, 'livros-error-slot', tbody, 7);
+    }
+  }
+
+  function renderLivros(pageData) {
+    const tbody = document.getElementById('livros-tbody');
+    const content = pageData?.content || [];
+    if (!content.length) {
+      tbody.innerHTML = `<tr><td colspan="7" class="empty-state">Nenhum livro encontrado.</td></tr>`;
+    } else {
+      tbody.innerHTML = content.map(l => `
+      <tr>
+        <td><strong>${escapeHtml(l.titulo)}</strong></td>
+        <td>${escapeHtml(l.isbn)}</td>
+        <td>${escapeHtml(l.autor?.nome || '—')}</td>
+        <td><span class="badge">${escapeHtml(GENERO_LABELS[l.genero] || l.genero || '—')}</span></td>
+        <td>${formatDate(l.dataPublicacao)}</td>
+        <td>${formatPreco(l.preco)}</td>
+        <td>
+          <div class="row-actions">
+            <button class="btn btn-secondary btn-sm" onclick='openLivroModal(${JSON.stringify(l).replace(/'/g, "&#39;")})'>Editar</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteLivro('${l.id}')">Excluir</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+    }
+
+    const info = document.getElementById('livros-page-info');
+    const pageNum = (pageData?.number ?? 0) + 1;
+    const totalPages = pageData?.totalPages ?? 1;
+    const totalElements = pageData?.totalElements ?? content.length;
+    info.textContent = `Página ${pageNum} de ${Math.max(totalPages, 1)} · ${totalElements} livro(s)`;
+
+    document.getElementById('btn-prev-page').disabled = !!pageData?.first;
+    document.getElementById('btn-next-page').disabled = !!pageData?.last;
+  }
+
+  function prevPage() { if (currentPage > 0) fetchLivros(currentPage - 1); }
+  function nextPage() { if (lastPageData && !lastPageData.last) fetchLivros(currentPage + 1); }
+
+  function resetLivroFiltros() {
+    ['f-isbn','f-titulo','f-nomeAutor','f-genero','f-ano'].forEach(id => document.getElementById(id).value = '');
+    fetchLivros(0);
+  }
+
+  function formatDate(iso) {
+    if (!iso) return '—';
+    const [y,m,d] = iso.split('-');
+    return d && m && y ? `${d}/${m}/${y}` : iso;
+  }
+  function formatPreco(v) {
+    if (v === null || v === undefined) return '—';
+    return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+  }
+
+  async function openLivroModal(livro) {
+    clearErro('livro-modal-error-slot');
+    document.getElementById('livro-modal-title').textContent = livro ? 'Editar livro' : 'Novo livro';
+    document.getElementById('livro-id').value = livro?.id || '';
+    document.getElementById('l-isbn').value = livro?.isbn || '';
+    document.getElementById('l-titulo').value = livro?.titulo || '';
+    document.getElementById('l-genero').value = livro?.genero || 'FICCAO';
+    document.getElementById('l-dataPublicacao').value = livro?.dataPublicacao || '';
+    document.getElementById('l-preco').value = livro?.preco ?? '';
+
+    await populateAutorSelect(livro?.autor?.id || '');
+
+    document.getElementById('livro-overlay').classList.add('active');
+  }
+  function closeLivroModal() { document.getElementById('livro-overlay').classList.remove('active'); }
+
+  async function populateAutorSelect(selectedId) {
+    const select = document.getElementById('l-idAutor');
+    select.innerHTML = '<option value="">Selecione um autor...</option>';
+    try {
+      if (!autoresCache.length) {
+        autoresCache = await apiRequest('/autores');
+      }
+      autoresCache.forEach(a => {
+        const opt = document.createElement('option');
+        opt.value = a.id;
+        opt.textContent = a.nome;
+        if (a.id === selectedId) opt.selected = true;
+        select.appendChild(opt);
+      });
+    } catch (err) {
+      // silent
+    }
+  }
+
+  async function saveLivro() {
+    clearErro('livro-modal-error-slot');
+    const id = document.getElementById('livro-id').value;
+    const payload = {
+      isbn: document.getElementById('l-isbn').value.trim(),
+      titulo: document.getElementById('l-titulo').value.trim(),
+      genero: document.getElementById('l-genero').value,
+      dataPublicacao: document.getElementById('l-dataPublicacao').value,
+      preco: document.getElementById('l-preco').value ? Number(document.getElementById('l-preco').value) : null,
+      idAutor: document.getElementById('l-idAutor').value || null
+    };
+
+    try {
+      if (id) {
+        await apiRequest('/livros/' + id, { method: 'PUT', body: JSON.stringify(payload) });
+        showToast('Livro updated com sucesso.', 'success');
+      } else {
+        await apiRequest('/livros', { method: 'POST', body: JSON.stringify(payload) });
+        showToast('Livro cadastrado com sucesso.', 'success');
+      }
+      closeLivroModal();
+      fetchLivros(currentPage);
+    } catch (err) {
+      if (err.networkError) {
+        renderErro('livro-modal-error-slot', null, err.message);
+      } else if (err.apiError) {
+        renderErro('livro-modal-error-slot', err.erro, `Erro ${err.status} ao salvar o livro.`);
+      } else {
+        renderErro('livro-modal-error-slot', null, 'Erro inesperado ao salvar o livro.');
+      }
+    }
+  }
+
+  async function deleteLivro(id) {
+    if (!confirm('Tem certeza que deseja excluir este livro?')) return;
+    clearErro('livros-error-slot');
+    try {
+      await apiRequest('/livros/' + id, { method: 'DELETE' });
+      showToast('Livro excluído com sucesso.', 'success');
+      fetchLivros(currentPage);
+    } catch (err) {
+      if (err.networkError) {
+        renderErro('livros-error-slot', null, err.message);
+      } else if (err.apiError) {
+        renderErro('livros-error-slot', err.erro, `Erro ${err.status} ao excluir o livro.`);
+      } else {
+        renderErro('livros-error-slot', null, 'Erro inesperado ao excluir o livro.');
+      }
+    }
+  }
+
+  function buildAutorQuery() {
+    const params = new URLSearchParams();
+    const nome = document.getElementById('af-nome').value.trim();
+    const nacionalidade = document.getElementById('af-nacionalidade').value.trim();
+    const ano = document.getElementById('af-ano').value;
+    if (nome) params.set('nome', nome);
+    if (nacionalidade) params.set('nacionalidade', nacionalidade);
+    if (ano) params.set('anoNascimento', ano);
+    return params.toString();
+  }
+
+  async function fetchAutores() {
+    clearErro('autores-error-slot');
+    const tbody = document.getElementById('autores-tbody');
+    tbody.innerHTML = `<tr><td colspan="5" class="empty-state">Carregando...</td></tr>`;
+    try {
+      const query = buildAutorQuery();
+      const data = await apiRequest('/autores' + (query ? '?' + query : ''));
+      autoresCache = data || [];
+      renderAutores(data || []);
+    } catch (err) {
+      handleFetchError(err, 'autores-error-slot', tbody, 5);
+    }
+  }
+
+  function renderAutores(list) {
+    const tbody = document.getElementById('autores-tbody');
+    if (!list.length) {
+      tbody.innerHTML = `<tr><td colspan="5" class="empty-state">Nenhum autor encontrado.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = list.map(a => `
+    <tr>
+      <td><strong>${escapeHtml(a.nome)}</strong></td>
+      <td>${escapeHtml(a.nacionalidade || '—')}</td>
+      <td>${formatDate(a.dataNascimento)}</td>
+      <td><code style="font-size:11.5px;color:var(--text-dim)">${escapeHtml((a.id || '').slice(0,8))}…</code></td>
+      <td>
+        <div class="row-actions">
+          <button class="btn btn-secondary btn-sm" onclick='openAutorModal(${JSON.stringify(a).replace(/'/g, "&#39;")})'>Editar</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteAutor('${a.id}')">Excluir</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+  }
+
+  function resetAutorFiltros() {
+    ['af-nome','af-nacionalidade','af-ano'].forEach(id => document.getElementById(id).value = '');
+    fetchAutores();
+  }
+
+  function openAutorModal(autor) {
+    clearErro('autor-modal-error-slot');
+    document.getElementById('autor-modal-title').textContent = autor ? 'Editar autor' : 'Novo autor';
+    document.getElementById('autor-id').value = autor?.id || '';
+    document.getElementById('a-nome').value = autor?.nome || '';
+    document.getElementById('a-nacionalidade').value = autor?.nacionalidade || '';
+    document.getElementById('a-dataNascimento').value = autor?.dataNascimento || '';
+    document.getElementById('autor-overlay').classList.add('active');
+  }
+  function closeAutorModal() { document.getElementById('autor-overlay').classList.remove('active'); }
+
+  async function saveAutor() {
+    clearErro('autor-modal-error-slot');
+    const id = document.getElementById('autor-id').value;
+    const payload = {
+      nome: document.getElementById('a-nome').value.trim(),
+      nacionalidade: document.getElementById('a-nacionalidade').value.trim(),
+      dataNascimento: document.getElementById('a-dataNascimento').value
+    };
+    if (id) payload.id = id;
+
+    try {
+      if (id) {
+        await apiRequest('/autores/' + id, { method: 'PUT', body: JSON.stringify(payload) });
+        showToast('Autor atualizado com sucesso.', 'success');
+      } else {
+        await apiRequest('/autores', { method: 'POST', body: JSON.stringify(payload) });
+        showToast('Autor cadastrado com sucesso.', 'success');
+      }
+      closeAutorModal();
+      autoresCache = [];
+      fetchAutores();
+    } catch (err) {
+      if (err.networkError) {
+        renderErro('autor-modal-error-slot', null, err.message);
+      } else if (err.apiError) {
+        renderErro('autor-modal-error-slot', err.erro, `Erro ${err.status} ao salvar o autor.`);
+      } else {
+        renderErro('autor-modal-error-slot', null, 'Erro inesperado ao salvar o autor.');
+      }
+    }
+  }
+
+  async function deleteAutor(id) {
+    if (!confirm('Tem certeza que deseja excluir este autor?')) return;
+    clearErro('autores-error-slot');
+    try {
+      await apiRequest('/autores/' + id, { method: 'DELETE' });
+      showToast('Autor excluído com sucesso.', 'success');
+      autoresCache = [];
+      fetchAutores();
+    } catch (err) {
+      if (err.networkError) {
+        renderErro('autores-error-slot', null, err.message);
+      } else if (err.apiError) {
+        renderErro('autores-error-slot', err.erro, `Erro ${err.status} ao excluir o autor.`);
+      } else {
+        renderErro('autores-error-slot', null, 'Erro inesperado ao excluir o autor.');
+      }
+    }
+  }
+
+  function handleFetchError(err, slotId, tbody, colspan) {
+    tbody.innerHTML = `<tr><td colspan="${colspan}" class="empty-state">Não foi possível carregar os dados.</td></tr>`;
+    if (err.networkError) {
+      renderErro(slotId, null, err.message);
+    } else if (err.apiError) {
+      renderErro(slotId, err.erro, `Erro ${err.status} ao buscar dados.`);
+    } else {
+      renderErro(slotId, null, 'Erro inesperado ao buscar dados.');
+    }
+  }
+
+  fetchLivros(0);
+  fetchAutores();
+</script>
+
+</body>
+</html>
