@@ -18,7 +18,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, ConfigurableObject configurableObject) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-                .formLogin(withDefaults())
+                .formLogin(config -> config.loginPage("/login").permitAll())
                 .httpBasic(withDefaults())
                 .authorizeHttpRequests(auth -> {
                     auth.anyRequest().authenticated();
