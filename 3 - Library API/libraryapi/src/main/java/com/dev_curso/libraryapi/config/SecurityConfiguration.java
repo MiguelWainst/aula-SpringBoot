@@ -34,7 +34,13 @@ public class SecurityConfiguration {
                 .formLogin(config -> config.loginPage("/login").permitAll())
                 .httpBasic(withDefaults())
                 .authorizeHttpRequests(authorize -> {
-                    authorize.anyRequest().authenticated(); // Dita que qualquer requisição feita para esta API tem que estar autenticado
+                    /*
+                    Para permitir ou negar a uma role a permissão de uma http request
+                    como um POST ou um GET.
+                     */
+                    authorize.requestMatchers(HttpMethod.DELETE, "/autores/**").hasRole("ADMIN");
+                    authorize.requestMatchers(HttpMethod.DELETE, "/livros/**").hasRole("ADMIN");
+
                     authorize.requestMatchers("/login").permitAll();
                     authorize.requestMatchers("/autores/**").hasRole("ADMIN");
                     authorize.requestMatchers("/livros/**").hasAnyRole("USER", "ADMIN");
