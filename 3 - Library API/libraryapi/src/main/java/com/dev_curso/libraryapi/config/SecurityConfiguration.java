@@ -5,6 +5,8 @@ import org.springframework.beans.factory.aspectj.ConfigurableObject;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import static org.springframework.security.config.Customizer.*;
+
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -28,11 +30,20 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, ConfigurableObject configurableObject) throws Exception {
         return http
-                .csrf(AbstractHttpConfigurer::disable) // Desabilitar o csrf faz com que minha aplicação possa receber o front de outros lugares.
+                .csrf(AbstractHttpConfigurer::disable) // Desabilitar o csrf faz com que a minha aplicação possa receber o front de outros lugares.
                 .formLogin(config -> config.loginPage("/login").permitAll())
                 .httpBasic(withDefaults())
                 .authorizeHttpRequests(authorize -> {
                     authorize.anyRequest().authenticated(); // Dita que qualquer requisição feita para esta API tem que estar autenticado
+                    authorize.requestMatchers("/login").permitAll();
+                    authorize.requestMatchers("/autores/**").hasRole("ADMIN");
+                    authorize.requestMatchers("/livros/**").hasAnyRole("USER", "ADMIN");
+
+                    /*
+                     Dita que qualquer requisição feita para esta API tem que estar autenticado.
+                     Essa linha deve ser a última, pois qualquer regra abaixo dela será ignorada.
+                     */
+                    authorize.anyRequest().authenticated();
                 })
                 .build();
     }
