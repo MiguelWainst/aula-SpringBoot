@@ -1,6 +1,7 @@
 package com.dev_curso.libraryapi.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.stereotype.Component;
@@ -10,6 +11,7 @@ import java.util.UUID;
 
 @Component
 @Table
+@Data
 public class Usuario {
 
     @Id
