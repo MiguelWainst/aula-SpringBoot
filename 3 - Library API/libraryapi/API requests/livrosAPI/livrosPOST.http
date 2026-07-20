@@ -1,0 +1,12 @@
+POST http://localhost:8080/livros
+Authorization: Basic admin 321
+Content-Type: application/json
+
+{
+  "isbn": "97810433215619",
+  "titulo": "Memorias do Subsolo",
+  "dataPublicacao": "2021-02-10",
+  "genero": "FICCAO",
+  "preco": 78.88,
+  "idAutor": "bf02f3d0-e6e4-4a63-9933-03aa98e1fe84"
+}
