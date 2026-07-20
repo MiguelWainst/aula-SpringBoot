@@ -41,7 +41,8 @@ public class SecurityConfiguration {
                     authorize.requestMatchers(HttpMethod.DELETE, "/autores/**").hasRole("ADMIN");
                     authorize.requestMatchers(HttpMethod.DELETE, "/livros/**").hasRole("ADMIN");
 
-                    authorize.requestMatchers("/login").permitAll();
+                    authorize.requestMatchers(HttpMethod.POST, "/usuarios/**").permitAll();
+                    authorize.requestMatchers("/login/**").permitAll();
                     authorize.requestMatchers("/autores/**").hasRole("ADMIN");
                     authorize.requestMatchers("/livros/**").hasAnyRole("USER", "ADMIN");
 
