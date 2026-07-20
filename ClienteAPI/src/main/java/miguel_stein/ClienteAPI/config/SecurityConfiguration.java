@@ -3,6 +3,7 @@ package miguel_stein.ClienteAPI.config;
 import org.springframework.beans.factory.aspectj.ConfigurableObject;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -27,6 +28,9 @@ public class SecurityConfiguration {
                 .formLogin(config -> config.loginPage("/login").permitAll())
                 .httpBasic(withDefaults())
                 .authorizeHttpRequests(auth -> {
+                    auth.requestMatchers(HttpMethod.POST, "/usuarios/**").permitAll();
+                    auth.requestMatchers(HttpMethod.DELETE, "/clientes/**").hasRole("ADMIN");
+                    auth.requestMatchers("/login/**").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .build();
