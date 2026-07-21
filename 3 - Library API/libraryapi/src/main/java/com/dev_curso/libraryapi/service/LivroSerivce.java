@@ -23,9 +23,9 @@ public class LivroSerivce {
     private final LivroRepository livroRepository;
     private final LivroValidator livroValidator;
 
-    public Livro salvar(Livro livro) {
+    public void salvar(Livro livro) {
         livroValidator.validar(livro);
-        return livroRepository.save(livro);
+        livroRepository.save(livro);
     }
 
     public Optional<Livro> acharPorId(UUID id) {
