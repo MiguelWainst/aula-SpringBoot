@@ -18,4 +18,8 @@ public class UsuarioService {
         usuario.setSenha(encoder.encode(usuario.getSenha()));
         usuarioRepository.save(usuario);
     }
+
+    public Usuario obterPorLogin(String login) {
+        return usuarioRepository.findByLogin(login);
+    }
 }
