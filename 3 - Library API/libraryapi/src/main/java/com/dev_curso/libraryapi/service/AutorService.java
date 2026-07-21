@@ -4,6 +4,7 @@ import com.dev_curso.libraryapi.exceptions.OperacaoNaoPermitidaException;
 import com.dev_curso.libraryapi.model.Autor;
 import com.dev_curso.libraryapi.repository.AutorRepository;
 import com.dev_curso.libraryapi.repository.LivroRepository;
+import com.dev_curso.libraryapi.security.SecurityService;
 import com.dev_curso.libraryapi.validator.AutorValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
@@ -22,9 +23,11 @@ public class AutorService {
     private final AutorRepository autorRepository;
     private final AutorValidator autorValidator;
     private final LivroRepository livroRepository;
+    private final SecurityService securityService;
 
     public Autor salvar(Autor autor) {
         autorValidator.validar(autor);
+        autor.setIdUsuario(securityService.obterUsuarioLogado().getId());
         return autorRepository.save(autor);
     }
 
@@ -32,6 +35,7 @@ public class AutorService {
         if (autor.getId() == null) {
             throw new IllegalArgumentException("Para atualizar, é necessário que o autor já exista");
         }
+        autor.setIdUsuario(securityService.obterUsuarioLogado().getId());
         autorValidator.validar(autor);
         autorRepository.save(autor);
     }
