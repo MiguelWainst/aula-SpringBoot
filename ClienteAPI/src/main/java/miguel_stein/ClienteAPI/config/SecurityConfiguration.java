@@ -1,5 +1,7 @@
 package miguel_stein.ClienteAPI.config;
 
+import miguel_stein.ClienteAPI.security.CustomUserDetailService;
+import miguel_stein.ClienteAPI.service.UsuarioService;
 import org.springframework.beans.factory.aspectj.ConfigurableObject;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +32,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers(HttpMethod.POST, "/usuarios/**").permitAll();
                     auth.requestMatchers(HttpMethod.DELETE, "/clientes/**").hasRole("ADMIN");
+                    auth.requestMatchers(HttpMethod.POST, "/clientes/**").hasRole("ADMIN");
                     auth.requestMatchers("/login/**").permitAll();
                     auth.anyRequest().authenticated();
                 })
@@ -42,20 +45,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public UserDetailsService userDetailsService(PasswordEncoder encoder) {
-
-        UserDetails user1 = User.builder()
-                .username("user")
-                .password(encoder.encode("password"))
-                .roles("USER")
-                .build();
-
-        UserDetails user2 = User.builder()
-                .username("admin")
-                .password(encoder.encode("password"))
-                .roles("USER", "ADMIN")
-                .build();
-
-        return new InMemoryUserDetailsManager(user1, user2);
+    public UserDetailsService userDetailsService(UsuarioService usuarioService) {
+        return new CustomUserDetailService(usuarioService);
     }
 }
