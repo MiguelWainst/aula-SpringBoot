@@ -8,6 +8,7 @@ import com.dev_curso.libraryapi.exceptions.RegistroDuplicadoException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.io.InputStream;
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 /* Classe de exception global da API / Controller */
@@ -59,9 +61,30 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErroResposta handlerAuthorizationDeniedException(AuthorizationDeniedException e) {
+        return new ErroResposta(
+                HttpStatus.FORBIDDEN.value(),
+                "Acesso negado",
+                List.of()
+        );
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErroResposta handlerAccessDeniedException(AccessDeniedException e) {
+        return new ErroResposta(
+                HttpStatus.FORBIDDEN.value(),
+                "Acesso negado",
+                List.of()
+        );
+    }
+
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErroResposta handleErrosNaoTratados(RuntimeException e) {
+        e.printStackTrace();
         return new ErroResposta(HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Erro inesperado! Entre em contato com a administração",
                 List.of()

@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -29,6 +30,7 @@ public class LivroController implements GenericController{
     private final LivroMapper mapper;
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('GERENTE', 'OPERADOR')") // Pode deixar em cada métod ou no top da classe (aplica em todos os métodos).
     public ResponseEntity<Void> salvarLivro(@RequestBody @Valid CadastroLivroDTO cadastroLivroDTO) {
         Livro livro = mapper.toEntity(cadastroLivroDTO);
         livroSerivce.salvar(livro);
@@ -37,6 +39,7 @@ public class LivroController implements GenericController{
         return ResponseEntity.created(location).build();
     }
 
+    @PreAuthorize("hasAnyRole('GERENTE', 'OPERADOR')")
     @GetMapping("{id}")
     public ResponseEntity<?> obterLivroPorId(@PathVariable String id) {
         return livroSerivce.acharPorId(UUID.fromString(id))
@@ -47,6 +50,7 @@ public class LivroController implements GenericController{
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @PreAuthorize("hasAnyRole('GERENTE', 'OPERADOR')")
     @GetMapping
     public ResponseEntity<Page<PesquisaLivroDTO>> pesquisarLivrosParam(
             @RequestParam(required = false, value = "isbn") String isbn,
@@ -62,6 +66,7 @@ public class LivroController implements GenericController{
         return ResponseEntity.ok(resultado);
     }
 
+    @PreAuthorize("hasAnyRole('GERENTE', 'OPERADOR')")
     @PutMapping("{id}")
     public ResponseEntity<Object> atualizarLivro(
             @RequestBody @Valid CadastroLivroDTO livroDTO,
@@ -81,6 +86,7 @@ public class LivroController implements GenericController{
                 }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @PreAuthorize("hasAnyRole('GERENTE', 'OPERADOR')")
     @DeleteMapping("{id}")
     public ResponseEntity<?> deletarLivro(@PathVariable String id) {
         return livroSerivce.acharPorId(UUID.fromString(id))

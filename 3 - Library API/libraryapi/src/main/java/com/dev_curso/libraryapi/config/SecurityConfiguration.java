@@ -6,6 +6,7 @@ import org.springframework.beans.factory.aspectj.ConfigurableObject;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -18,6 +19,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true) // Comentar sobre isso
 public class SecurityConfiguration {
 
     /*
@@ -32,18 +34,8 @@ public class SecurityConfiguration {
                 .formLogin(config -> config.loginPage("/login").permitAll())
                 .httpBasic(withDefaults())
                 .authorizeHttpRequests(authorize -> {
-                    /*
-                    Para permitir ou negar a uma role a permissão de uma http request
-                    como um POST ou um GET.
-                     */
-                    authorize.requestMatchers(HttpMethod.DELETE, "/autores/**").hasRole("ADMIN");
-                    authorize.requestMatchers(HttpMethod.DELETE, "/livros/**").hasRole("ADMIN");
-
                     authorize.requestMatchers(HttpMethod.POST, "/usuarios/**").permitAll();
                     authorize.requestMatchers("/login/**").permitAll();
-                    authorize.requestMatchers("/autores/**").hasRole("ADMIN");
-                    authorize.requestMatchers("/livros/**").hasAnyRole("USER", "ADMIN");
-
                     /*
                      Dita que qualquer requisição feita para esta API tem que estar autenticado.
                      Essa linha deve ser a última, pois qualquer regra abaixo dela será ignorada.
