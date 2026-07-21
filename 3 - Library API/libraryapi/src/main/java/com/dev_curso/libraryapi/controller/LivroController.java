@@ -86,7 +86,7 @@ public class LivroController implements GenericController{
                 }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PreAuthorize("hasAnyRole('GERENTE', 'OPERADOR')")
+    @PreAuthorize("hasRole('GERENTE')")
     @DeleteMapping("{id}")
     public ResponseEntity<?> deletarLivro(@PathVariable String id) {
         return livroSerivce.acharPorId(UUID.fromString(id))
