@@ -17,7 +17,7 @@ public class LoginViewController {
     @GetMapping("/")
     @ResponseBody
     public String paginaHome(Authentication authentication) {
-        return "Bem-vindo, " + authentication.getName();
+        return "Bem-vindo, " + authentication.getPrincipal();
     }
 
 }
