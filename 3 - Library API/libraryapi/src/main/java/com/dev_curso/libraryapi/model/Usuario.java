@@ -23,6 +23,8 @@ public class Usuario {
     @Column
     private String senha;
 
+    private String email;
+
     @JdbcTypeCode(SqlTypes.ARRAY) // Converte de List para Array.
     @Column(name = "roles", columnDefinition = "varchar[]")
     private List<String> roles;

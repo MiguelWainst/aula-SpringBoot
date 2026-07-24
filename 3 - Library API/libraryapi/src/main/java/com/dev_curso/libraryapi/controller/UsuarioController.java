@@ -4,6 +4,7 @@ import com.dev_curso.libraryapi.controller.dto.UsuarioDTO;
 import com.dev_curso.libraryapi.controller.mappers.UsuarioMapper;
 import com.dev_curso.libraryapi.model.Usuario;
 import com.dev_curso.libraryapi.service.UsuarioService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class UsuarioController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void salvar(@RequestBody UsuarioDTO dto) {
+    public void salvar(@RequestBody @Valid UsuarioDTO dto) {
         Usuario entity = mapper.toEntity(dto);
         usuarioService.salvar(entity);
     }
