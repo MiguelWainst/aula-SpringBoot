@@ -21,7 +21,7 @@ public class LoginViewController {
         if (authentication instanceof CustomAuthentication customAuth) {
             System.out.println(customAuth.getUsuario());
         }
-        return "Bem-vindo, " + authentication.getPrincipal();
+        return "Bem-vindo, " + authentication.getName();
     }
 
 }

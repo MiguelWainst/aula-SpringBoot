@@ -1,6 +1,7 @@
 package com.dev_curso.libraryapi.config;
 
 import com.dev_curso.libraryapi.security.CustomUserDetailService;
+import com.dev_curso.libraryapi.security.LoginSocialSuccessHandler;
 import com.dev_curso.libraryapi.service.UsuarioService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +29,7 @@ public class SecurityConfiguration {
      */
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, LoginSocialSuccessHandler successHandler) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable) // Desabilitar o csrf faz com que a minha aplicação possa receber o front de outros lugares.
 //                .formLogin(config -> config.loginPage("/login").permitAll())
@@ -43,7 +44,9 @@ public class SecurityConfiguration {
                      */
                     authorize.anyRequest().authenticated();
                 })
-                .oauth2Login(withDefaults())
+                .oauth2Login(oauth2 -> {
+                    oauth2.successHandler(successHandler);
+                })
                 .build();
     }
 
